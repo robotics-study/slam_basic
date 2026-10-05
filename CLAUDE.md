@@ -36,7 +36,7 @@ SLAM 알고리즘 구현체 + demo 모음 — 계보의 네 갈래(추정 기초
 ├── cpp/
 │   ├── CMakeLists.txt
 │   ├── include/slam/
-│   │   ├── core/                # estimator.hpp, params.hpp, trace.hpp, types.hpp, rng.hpp, sim.hpp
+│   │   ├── core/                # estimator.hpp, params.hpp, trace.hpp, types.hpp, rng.hpp, sim.hpp, metrics.hpp
 │   │   ├── maps/                # occupancy_grid.hpp, pgm.hpp, loader.hpp (레이캐스트 포함)
 │   │   ├── filtering/  registration/  filter_based/  graph_based/    # 알고리즘 헤더 (사이트 섹션과 1:1)
 │   │   └── src/                 # include/와 동일 구조의 구현
@@ -45,7 +45,7 @@ SLAM 알고리즘 구현체 + demo 모음 — 계보의 네 갈래(추정 기초
 ├── python/
 │   ├── pyproject.toml
 │   ├── slam/
-│   │   ├── core/                # estimator.py, params.py, trace.py, types.py, rng.py, sim.py
+│   │   ├── core/                # estimator.py, params.py, trace.py, types.py, rng.py, sim.py, metrics.py
 │   │   ├── maps/                # cpp include/slam/maps/ 와 1:1 미러
 │   │   ├── filtering/  registration/  filter_based/  graph_based/    # 알고리즘 모듈 (사이트 섹션과 1:1)
 │   │   └── demos/               # demo_<algo>.py — demo_common.run(name, factory) 조립만
@@ -91,7 +91,7 @@ SLAM 알고리즘 구현체 + demo 모음 — 계보의 네 갈래(추정 기초
 - **데모 산출물 형식 (룰)**: 모든 알고리즘의 demo trace 는 `replay.py` 로 (1) 애니메이션 **GIF** (`--gif`, 스텝 재생 + 최종 프레임 홀드) 와 (2) 중간 과정 **PNG 스냅샷** 세트 (`--snapshots`, 진행률 균등 분할) 로 렌더링 가능해야 한다. 산출물은 두 언어 데모 각각에 대해 `out/viz/<algo>/py/`, `out/viz/<algo>/cpp/` 아래에 둔다 (`out/` 은 gitignore — 커밋하지 않는다).
 
 ### Benchmark
-- `tools/bench/run_matrix.py` 는 (scenario × algorithm) 조합을 실행하고 metric 을 수집한다: ATE RMSE(궤적 절대 오차), RPE RMSE(상대 오차), 매핑 계열은 map IoU, 랜드마크 계열은 landmark 위치 RMSE. 알고리즘 열은 `configs/<section>/<algo>.yaml` + `python/demos/demo_<algo>.py` 가 둘 다 존재할 때 발견된다.
+- `tools/bench/run_matrix.py` 는 (scenario × algorithm) 조합을 실행하고 metric 을 수집한다: ATE RMSE(궤적 절대 오차), RPE RMSE(상대 오차), 매핑 계열은 map IoU, 랜드마크 계열은 landmark 위치 RMSE. 알고리즘 열은 `configs/<section>/<algo>.yaml` + `python/slam/demos/demo_<algo>.py` 가 둘 다 존재할 때 발견된다.
 - C++ demo 는 같은 CLI 인자로 같은 trace 를 출력하므로 언어 비교가 가능하다 (난수 결정성 계약 덕분에 입자 계열도 필드 단위 일치).
 
 ## 빌드 / 테스트 / 실행
@@ -109,7 +109,8 @@ PYTHONPATH=$PWD/python .venv/bin/python -m ruff check python tools
 PYTHONPATH=$PWD/python .venv/bin/python -m mypy python/slam tools
 
 # Demo (예시 — 두 언어가 동일한 인자 형태를 갖는다)
-python python/demos/demo_histogram_filter.py --scenario maps/scenarios/corridor01_loop.yaml \
+PYTHONPATH=$PWD/python python -m slam.demos.demo_histogram_filter \
+    --scenario maps/scenarios/corridor01_back_and_forth.yaml \
     --params configs/filtering/histogram_filter.yaml --trace out/trace.jsonl
 ./cpp/build/demos/demo_histogram_filter --scenario ... --params ... --trace out/trace.cpp.jsonl
 
