@@ -1,0 +1,31 @@
+# 같은 투어, 같은 맵 — 센서가 점 랜드마크로 바뀐다. id 는 목록 순서(0부터)이고
+# association 은 주어진다고 정직하게 가정한다(FastSLAM 원논문이 그렇다). 가시성은
+# GT pose 에서 랜드마크 점까지 선분이 occupied 셀을 통과하지 않음 — 벽 너머
+# 랜드마크는 관측되지 않는다. left room 에서는 A 와 문틀만, 문을 지나면 B 가 보인다.
+map: ../grid/office01.yaml
+path:
+  - [0.875, 4.375]           # 좌방 (cell r18,c3)
+  - [3.125, 7.375]           # 좌방 위쪽 — 블록 A 를 돌아 돈다
+  - [6.875, 4.625]           # 문 통과 (cell r17,c27)
+  - [10.125, 6.375]          # 우방 위쪽까지
+step_meters: 0.4             # 약 25 스텝
+sensor:
+  type: landmarks
+  range_max: 6.0             # 이 거리 너머 랜드마크는 관측되지 않는다
+  sigma_range: 0.05          # m
+  sigma_bearing: 0.03        # rad
+landmarks:                   # 블록 모서리 셀 중심들 (world 좌표) — id = 목록 순서
+  - [1.625, 6.875]           # A top-left
+  - [2.125, 6.875]           # A top-right
+  - [1.625, 6.375]           # A bottom-left
+  - [2.125, 6.375]           # A bottom-right
+  - [6.875, 5.625]           # door top jamb
+  - [6.875, 3.375]           # door bottom jamb
+  - [8.625, 2.875]           # B top-left
+  - [10.125, 2.875]          # B top-right
+  - [8.625, 1.875]           # B bottom-left
+  - [10.125, 1.875]          # B bottom-right
+odom_noise:
+  sigma_xy: 0.05
+  sigma_theta: 0.035
+seed: 42

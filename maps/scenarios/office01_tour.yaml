@@ -1,0 +1,20 @@
+# 좌방 → 문(폭 8칸) → 우방을 관통하는 투어. log-odds 지도가 자라나는 것과 오도메트리
+# 드리프트가 지도를 번지게 하는 것을 같은 화면에서 본다(grid_mapping 의 정직한 실패).
+# 같은 스트림의 빔 스캔은 registration 갈래(ICP/NDT)의 입력이기도 하다 — 바퀴 없는 오도메트리.
+map: ../grid/office01.yaml
+path:
+  - [0.875, 4.375]           # 좌방 (cell r18,c3)
+  - [3.125, 7.375]           # 좌방 위쪽 — 블록 A 를 돌아 돈다
+  - [6.875, 4.625]           # 문 통과 (cell r17,c27)
+  - [10.125, 6.375]          # 우방 위쪽까지
+step_meters: 0.4             # 약 25 스텝
+sensor:
+  type: beam
+  beams: 90
+  fov_deg: 180.0
+  range_max: 6.0
+  sigma_range: 0.05
+odom_noise:
+  sigma_xy: 0.05
+  sigma_theta: 0.035
+seed: 42

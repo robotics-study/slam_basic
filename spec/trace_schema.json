@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "slam/trace-event.schema.json",
+  "title": "slam trace event",
+  "description": "step-by-step 추정의 언어 공용 계약. trace 파일은 JSON Lines(.jsonl)이며 한 줄이 이벤트 하나다. C++/Python 구현 모두 이 스키마를 따르는 이벤트만 방출한다. 내러티브는 seq 순서뿐 — wall-clock 시간은 담지 않는다. 유일한 시간 필드는 스텝 번호 t 다. 데모 드라이버가 스텝마다 step_observed(입력 측: GT 자세, noisy 오도메트리, 관측)를 방출하고, 알고리즘은 자기 추정 이벤트를 같은 t 로 방출한다. 숫자는 파싱 후 값으로 비교한다 (Python 5.0 과 C++ 5 는 같은 값; 정수는 양쪽 모두 정수 바이트로 직렬화된다).",
+  "type": "object",
+  "required": ["seq", "event"],
+  "properties": {
+    "seq": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "이벤트 순번 (0부터 단조 증가). 재생 순서의 기준."
+    },
+    "event": {
+      "enum": [
+        "run_started",
+        "step_observed",
+        "pose_estimated",
+        "belief_updated",
+        "particles_updated",
+        "landmarks_updated",
+        "map_updated",
+        "constraint_added",
+        "trajectory_found",
+        "run_finished"
+      ]
+    },
+    "algorithm": {
+      "type": "string",
+      "description": "run_started 전용: 알고리즘 식별자 (configs 파일명과 동일. 예: histogram_filter)."
+    },
+    "scenario": {
+      "type": "string",
+      "description": "run_started 전용: 시나리오 yaml 경로 (repo 루트 기준 상대 경로). GT 맵은 이 파일이 가리킨다."
+    },
+    "params": {
+      "type": "object",
+      "description": "run_started 전용: 실행에 사용된 파라미터 값 스냅샷. 키는 사전순으로 정렬해 두 언어가 같은 순서로 직렬화한다."
+    },
+    "seed": {
+      "type": "integer",
+      "description": "run_started 전용: 시나리오의 난수 시드 — 입자·노이즈 드로 수열의 시작값 (spec/data_formats.md 의 splitmix64 계약)."
+    },
+    "sensor": {
+      "type": "object",
+      "description": "run_started 전용: 시나리오 센서 선언 스냅샷 {type, beams?, fov_deg?, range_max, sigma_range, sigma_bearing?} — 재생기가 관측을 설명할 때 읽는다."
+    },
+    "landmarks": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/point" },
+      "description": "run_started 선택 (landmarks 시나리오): GT 랜드마크 좌표 [x, y] — 목록 순서가 id. 알고리즘은 좌표를 모른다(관측은 bearing/range 뿐), 재생기만 그린다."
+    },
+    "t": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "스텝 번호. step_observed 와 추정 이벤트가 같은 t 로 짝을 이룬다 (초기화 이벤트는 t=0)."
+    },
+    "gt": {
+      "$ref": "#/$defs/pose",
+      "description": "step_observed 전용: 그 스텝의 ground-truth 자세 [x, y, θ] — 알고리즘은 읽지 않고 시각화와 metric 만 쓴다."
+    },
+    "odom": {
+      "$ref": "#/$defs/twist",
+      "description": "step_observed 전용: 알고리즘이 소비하는 noisy 오도메트리 명령 [dx, dy, dθ] (로봇 프레임)."
+    },
+    "scan": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/point" },
+      "description": "step_observed 선택 (beam 시나리오): hit 된 빔 끝점 목록 — **로봇 프레임**. 재생기가 gt 자세로 world 에 복원해 레이저 부채꼴을 그린다."
+    },
+    "obs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "bearing", "range"],
+        "properties": {
+          "id": { "type": "integer", "minimum": 0 },
+          "bearing": { "type": "number" },
+          "range": { "type": "number" }
+        },
+        "additionalProperties": false
+      },
+      "description": "step_observed 선택 (landmarks 시나리오): id 오름차순 관측 목록. bearing 은 로봇 heading 기준 상대각(rad), range 는 m."
+    },
+    "pose": {
+      "$ref": "#/$defs/pose",
+      "description": "pose_estimated 전용: 그 스텝의 추정 자세 [x, y, θ]."
+    },
+    "cov": {
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 3,
+      "maxItems": 3,
+      "description": "pose_estimated 선택: 대각 표준편차 [σx, σy, σθ] — 재생기가 오차 타원을 그린다."
+    },
+    "cells": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": { "type": "number" },
+        "minItems": 3,
+        "maxItems": 3
+      },
+      "description": "belief_updated: [row, col, p] — 셀 확률(0..1) 전체 목록(row-major 순). map_updated: [row, col, l] — log-odds 가 이전 방출 이후 바뀐 셀만 (sparse)."
+    },
+    "particles": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "items": { "type": "number" },
+        "minItems": 4,
+        "maxItems": 4
+      },
+      "description": "particles_updated 전용: [x, y, θ, w] — 리샘플링 후 입자 구름 (w = 정규화 가중치; 리샘플링 직후엔 균일)."
+    },
+    "estimated": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "x", "y"],
+        "properties": {
+          "id": { "type": "integer", "minimum": 0 },
+          "x": { "type": "number" },
+          "y": { "type": "number" },
+          "sx": { "type": "number" },
+          "sy": { "type": "number" }
+        },
+        "additionalProperties": false
+      },
+      "description": "landmarks_updated 전용: 현재 랜드마크 추정 [{id, x, y, sx?, sy?}] — id 는 run_started.landmarks 와 같은 목록 순서."
+    },
+    "i": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "constraint_added 전용: 제약 간선의 시작 pose 노드 인덱스 (스텝 번호와 동일)."
+    },
+    "j": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "constraint_added 전용: 제약 간선의 끝 pose 노드 인덱스."
+    },
+    "d": {
+      "$ref": "#/$defs/twist",
+      "description": "constraint_added 전용: 관측된 상대 자세 제약 [dx, dy, dθ] (노드 i 프레임)."
+    },
+    "loop": {
+      "type": "boolean",
+      "description": "constraint_added 선택: true 면 루프 클로저(인접 스텝이 아닌 과거 노드와의 재관측) — 재생기가 다른 색으로 그린다. 오도메트리 간선에는 생략."
+    },
+    "poses": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/pose" },
+      "description": "trajectory_found 전용 (batch 계열): 인덱스가 스텝 t 와 일치하는 최종 추정 자세 목록 [p_0 … p_T]."
+    },
+    "metrics": {
+      "type": "object",
+      "description": "run_finished 전용: ate_rmse, rpe_rmse (+ 매핑 계열 map_iou, 랜드마크 계열 landmark_rmse) — 키는 사전순 정렬. 추정 궤적과 GT 의 공통 시간 인덱스 위에서 계산한다."
+    }
+  },
+  "$defs": {
+    "point": {
+      "description": "world/로봇 프레임 점 [x, y] (미터).",
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "pose": {
+      "description": "자세 [x, y, θ] — x,y 미터, θ 라디안 (−π, π].",
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 3,
+      "maxItems": 3
+    },
+    "twist": {
+      "description": "오도메트리 명령 [dx, dy, dθ] — 로봇 프레임 변위(m)와 회전(rad).",
+      "type": "array",
+      "items": { "type": "number" },
+      "minItems": 3,
+      "maxItems": 3
+    }
+  }
+}

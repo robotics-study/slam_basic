@@ -38,6 +38,7 @@ visualization, deterministic bilingual traces, and a benchmark matrix (ATE · RP
 | 섹션 | 알고리즘 | 원 논문 |
 |---|---|---|
 | filtering | Histogram filter | Thrun, Burgard & Fox 2005 (교과서 ch.4) |
+| filtering | Occupancy grid mapping (log-odds) | Moravec (1988) · Elfes (1989), log-odds 형식은 Thrun et al. (2005) |
 | filtering | Particle filter | Gordon, Salmond & Smith (1993) |
 | filtering | Monte Carlo Localization | Fox, Burgard, Dellaert & Thrun (1999) · KLD-sampling Pfaff et al. (2003) |
 | registration | ICP | Besl & McKay (TPAMI 1992) |

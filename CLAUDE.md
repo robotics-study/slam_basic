@@ -10,10 +10,10 @@ SLAM 알고리즘 구현체 + demo 모음 — 계보의 네 갈래(추정 기초
 
 | 섹션 (= 코드 디렉토리) | 알고리즘 (⏳ = planned) | 무엇을 가르치는 갈래 |
 |---|---|---|
-| `filtering` | histogram_filter ⏳, particle_filter ⏳, mcl ⏳ | 재귀 베이지 필터의 기초. 이산 상태의 histogram filter(Thrun et al. 2005 ch.4)에서 bootstrap 입자 필터(Gordon, Salmond & Smith 1993)로, 그걸 로봇 자세에 적용한 Monte Carlo Localization(Fox et al. 1999, 적응 표본 수 KLD-sampling은 Pfaff et al. 2003)로 올라간다 |
-| `registration` | icp ⏳, ndt ⏳ | 오도메트리 없이 측정만으로 자세를 구하는 등록(登錄). 점-점 ICP(Besl & McKay TPAMI 1992)에서 정규 분포 변환 NDT(Biber & Strasser IROS 2003)로. 스캔 매칭은 뒤쪽 갈래의 프론트엔드가 된다 |
-| `filter_based` | ekf_slam ⏳, fastslam_1 ⏳, fastslam_2 ⏳, gmapping ⏳ | 확장 상태 EKF-SLAM(Smith & Cheeseman 1986) → Rao-Blackwell화: 궤적은 입자로 랜드마크 KF는 정확히 푸는 FastSLAM(Montemerlo et al. AAAI 2002)와 개선 제안(JAIR 2003) → 적응 리샘플링 + 입자별 격자 지도 + 증분 스무딩으로 완성된 GMapping(Grisetti, Stachniss & Burgard T-RO 2007) |
-| `graph_based` | spa ⏳, graphslam ⏳ | 계획을 밀어 넣는 게 아니라 측정을 제약으로 모은다. 희소 자세 조정 SPA(Konolige IROS 2001: 자세만 변수로) → 자세와 랜드마크를 모두 정보 형식의 변수로 묶는 완전 그래프 SLAM(Grisetti, Kümmerle, Stachniss & Burgard의 tutorial 계보) |
+| `filtering` | histogram_filter ⏳, grid_mapping ⏳, particle_filter ⏳, mcl ⏳ | SLAM 의 두 절반을 분리해서 가르친다. 재귀 베이지 필터의 기초 — 이산 상태 histogram filter(Thrun et al. 2005 ch.4)와 셀별 독립 베이지 = log-odds occupancy grid mapping(Moravec/Elfes, log-odds 형식은 Thrun et al.), 그리고 연속 상태로 올라간 bootstrap 입자 필터(Gordon, Salmond & Smith 1993)를 로봇 자세에 적용한 Monte Carlo Localization(Fox et al. 1999; 적응 표본 수 KLD-sampling은 Pfaff et al. 2003) |
+| `registration` | icp ⏳, ndt ⏳ | 오도메트리 없이 측정만으로 자세를 구하는 등록(登錄) — 바퀴 없는 오도메트리. 점-점 ICP(Besl & McKay TPAMI 1992: 대응 + 강체 변환 폐형해)에서 정규 분포 변환 NDT(Biber & Strasser IROS 2003) |
+| `filter_based` | ekf_slam ⏳, fastslam_1 ⏳, fastslam_2 ⏳, gmapping ⏳ | 추정기 안에 지도를 넣는다. 확장 상태 EKF-SLAM(Smith & Cheeseman 1986: 랜드마크를 상태에 증분) → Rao-Blackwell화: 궤적은 입자로 랜드마크 KF는 정확히 푸는 FastSLAM(Montemerlo et al. AAAI 2002)과 개선 제안(JAIR 2003) → 적응 리샘플링 + 입자별 격자 지도(finding 갈래의 log-odds)+ 증분 스무딩으로 완성된 GMapping(Grisetti, Stachniss & Burgard T-RO 2007) |
+| `graph_based` | spa ⏳, graphslam ⏳ | 계획을 밀어 넣는 게 아니라 측정을 제약으로 모은다. 같은 랜드마크 공가시 관측을 — 자세만 변수로 남기고 랜드마크를 소거한 희소 자세 조정 SPA(Konolige IROS 2001)와, 랜드마크까지 정보 형식의 변수로 묶는 완전 그래프 SLAM(Grisetti, Kümmerle, Stachniss & Burgard의 tutorial 계보) |
 
 모든 알고리즘은 추상 클래스 기반으로 다음 세 가지가 자동으로 성립해야 한다:
 1. **Performance estimate** — 공통 metric(ATE RMSE, 매핑 계열은 map IoU와 landmark 오차)을 benchmark runner가 수집.

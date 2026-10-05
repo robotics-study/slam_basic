@@ -1,0 +1,25 @@
+# 중앙 블록을 한 바퀴 도는 링 — graph_based 갈래의 무대. 출발 지점으로 돌아온다:
+# 같은 블록 모서리 랜드마크를 다시 관측하는 순간의 공가시 관측이 pose-pose 제약이 되고,
+# 드리프트가 쌓인 오도메트리 체인이 루프 제약 하나로 조여진다.
+map: ../grid/loop01.yaml
+path:                        # 시계 반대 방향 한 바퀴 (cell 중심 기준 r30,c7 → r5,c7 → r5,c40 → r30,c40 → 귀환)
+  - [1.875, 1.375]
+  - [1.875, 7.625]
+  - [10.125, 7.625]
+  - [10.125, 1.375]
+  - [1.875, 1.375]
+step_meters: 0.5             # 약 58 스텝
+sensor:
+  type: landmarks
+  range_max: 6.0
+  sigma_range: 0.05
+  sigma_bearing: 0.03
+landmarks:                   # 중앙 블록 바깥 모서리 넷
+  - [3.625, 6.375]           # block top-left
+  - [8.375, 6.375]           # block top-right
+  - [3.625, 2.625]           # block bottom-left
+  - [8.375, 2.625]           # block bottom-right
+odom_noise:
+  sigma_xy: 0.05
+  sigma_theta: 0.035
+seed: 42

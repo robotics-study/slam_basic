@@ -1,0 +1,4 @@
+type: occupancy_grid
+image: loop01.pgm         # 0(검정)=occupied, 255(흰색)=free
+resolution: 0.25       # meters / pixel → world 12 x 9 m
+origin: [0.0, 0.0]         # 이미지 좌하단 픽셀의 world pose — θ 는 쓰지 않는다
