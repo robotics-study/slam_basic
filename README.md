@@ -62,7 +62,7 @@ visualization, deterministic bilingual traces, and a benchmark matrix (ATE · RP
 ```bash
 # Python (>= 3.10) — slam 패키지 + viz/dev extras
 cd python && pip install -e ".[dev,viz]" && cd ..
-pytest python/tests
+PYTHONPATH=$PWD/python .venv/bin/python -m pytest python/tests -q
 
 # C++ (C++20, CMake >= 3.20, GoogleTest 는 FetchContent 자동)
 cmake -S cpp -B cpp/build -DCMAKE_BUILD_TYPE=Release
@@ -73,8 +73,8 @@ ctest --test-dir cpp/build
 ### 데모 실행 — 두 언어가 동일한 CLI 인자
 
 ```bash
-# Python
-python python/demos/demo_<algo>.py \
+# Python (패키지 모듈 실행)
+PYTHONPATH=$PWD/python .venv/bin/python -m slam.demos.demo_<algo> \
   --scenario maps/scenarios/<scenario>.yaml --params configs/<section>/<algo>.yaml --trace out/trace.jsonl
 
 # C++ (동일 인자)
@@ -87,12 +87,12 @@ stdout 에 한 줄 JSON metric(ATE RMSE 등), `--trace` 경로에 step-by-step J
 ### 시각화 — C++/Python trace 를 같은 도구로 재생
 
 ```bash
-python tools/viz/replay.py out/trace.jsonl                    # interactive 재생
-python tools/viz/replay.py out/trace.jsonl --gif out/x.gif --snapshots out/snaps/
+PYTHONPATH=$PWD/python .venv/bin/python tools/viz/replay.py out/trace.jsonl                    # interactive 재생
+PYTHONPATH=$PWD/python .venv/bin/python tools/viz/replay.py out/trace.jsonl --gif out/x.gif --snapshots out/snaps/
 ```
 
 ### 벤치마크
 
 ```bash
-python tools/bench/run_matrix.py --out out/report.md
+PYTHONPATH=$PWD/python .venv/bin/python tools/bench/run_matrix.py --out out/report.md
 ```

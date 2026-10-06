@@ -1,0 +1,30 @@
+{
+  "map": "../grid/corridor01.yaml",
+  "path": [
+    [
+      0.75,
+      1.75
+    ],
+    [
+      11.75,
+      1.75
+    ],
+    [
+      0.75,
+      1.75
+    ]
+  ],
+  "step_meters": 0.5,
+  "sensor": {
+    "type": "beam",
+    "beams": 90,
+    "fov_deg": 180.0,
+    "range_max": 6.0,
+    "sigma_range": 0.05
+  },
+  "odom_noise": {
+    "sigma_xy": 0.05,
+    "sigma_theta": 0.035
+  },
+  "seed": 42
+}
