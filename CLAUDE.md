@@ -1,6 +1,6 @@
 # slam_basic
 
-SLAM 알고리즘 구현체 + demo 모음 — 계보의 네 갈래(추정 기초, 스캔 매칭, 필터 기반 SLAM, 그래프 기반 SLAM)를 C++ / Python 독립 이중 구현으로.
+SLAM 알고리즘 구현체 + demo 모음 — 계보의 다섯 갈래(추정 기초, 스캔 매칭, 특징 추출, 필터 기반 SLAM, 그래프 기반 SLAM)를 C++ / Python 독립 이중 구현으로.
 
 ## 프로젝트 개요
 
@@ -12,8 +12,9 @@ SLAM 알고리즘 구현체 + demo 모음 — 계보의 네 갈래(추정 기초
 |---|---|---|
 | `filtering` | histogram_filter ⏳, grid_mapping ⏳, particle_filter ⏳, mcl ⏳ | SLAM 의 두 절반을 분리해서 가르친다. 재귀 베이지 필터의 기초 — 이산 상태 histogram filter(Thrun et al. 2005 ch.4)와 셀별 독립 베이지 = log-odds occupancy grid mapping(Moravec/Elfes, log-odds 형식은 Thrun et al.), 그리고 연속 상태로 올라간 bootstrap 입자 필터(Gordon, Salmond & Smith 1993)를 로봇 자세에 적용한 Monte Carlo Localization(Fox et al. 1999; 적응 표본 수 KLD-sampling은 Pfaff et al. 2003) |
 | `registration` | icp ⏳, ndt ⏳ | 오도메트리 없이 측정만으로 자세를 구하는 등록(登錄) — 바퀴 없는 오도메트리. 점-점 ICP(Besl & McKay TPAMI 1992: 대응 + 강체 변환 폐형해)에서 정규 분포 변환 NDT(Biber & Strasser IROS 2003) |
-| `filter_based` | ekf_slam ⏳, fastslam_1 ⏳, fastslam_2 ⏳, gmapping ⏳ | 추정기 안에 지도를 넣는다. 확장 상태 EKF-SLAM(Smith & Cheeseman 1986: 랜드마크를 상태에 증분) → Rao-Blackwell화: 궤적은 입자로 랜드마크 KF는 정확히 푸는 FastSLAM(Montemerlo et al. AAAI 2002)과 개선 제안(JAIR 2003) → 적응 리샘플링 + 입자별 격자 지도(finding 갈래의 log-odds)+ 증분 스무딩으로 완성된 GMapping(Grisetti, Stachniss & Burgard T-RO 2007) |
-| `graph_based` | spa ⏳, graphslam ⏳ | 계획을 밀어 넣는 게 아니라 측정을 제약으로 모은다. 같은 랜드마크 공가시 관측을 — 자세만 변수로 남기고 랜드마크를 소거한 희소 자세 조정 SPA(Konolige IROS 2001)와, 랜드마크까지 정보 형식의 변수로 묶는 완전 그래프 SLAM(Grisetti, Kümmerle, Stachniss & Burgard의 tutorial 계보) |
+| `features` | dbscan ⏳ | 랜드마크는 어디서 오는가 — 날 스캔 점을 밀도 클러스터링으로 안정적인 랜드마크 후보로 깎는 단계(Ester et al. KDD 1996; 해설 논문 Kriegel, Schubert & Zimek WIREs DMKD 2017). 결정성 계약: 점 인덱스 순서로 확장 |
+| `filter_based` | ekf_slam ⏳, fastslam_1 ⏳, fastslam_2 ⏳, gmapping ⏳, fast_lio ⏳, fast_lio2 ⏳ | 추정기 안에 지도를 넣는다. 확장 상태 EKF-SLAM(Smith & Cheeseman 1986: 랜드마크를 상태에 증분) → Rao-Blackwell화: 궤적은 입자로 랜드마크 KF는 정확히 푸는 FastSLAM(Montemerlo et al. AAAI 2002)과 개선 제안(JAIR 2003) → 적응 리샘플링 + 입자별 격자 지도(finding 갈래의 log-odds)+ 증분 스무딩으로 완성된 GMapping(Grisetti, Stachniss & Burgard T-RO 2007). 라이다-관성 긴밀 결합(2D 교육화): 바퀴 오도메트리 없이 점 관측을 직접 반복 칼만 필터로 갱신하는 FAST-LIO(Xu et al. T-RO 2021: 키프레임 + iSAM2)와, 키프레임까지 지우고 증분 k-d 트리에 점을 직접 갱신하는 FAST-LIO2(RA-L 2022) |
+| `graph_based` | spa ⏳, graphslam ⏳, cartographer ⏳ | 계획을 밀어 넣는 게 아니라 측정을 제약으로 모은다. 같은 랜드마크 공가시 관측을 — 자세만 변수로 남기고 랜드마크를 소거한 희소 자세 조정 SPA(Konolige IROS 2001)와, 랜드마크까지 정보 형식의 변수로 묶는 완전 그래프 SLAM(Grisetti, Kümmerle, Stachniss & Burgard의 tutorial 계보). Cartographer(Hess et al. ICRA 2016): 서브맵 축적 + branch-and-bound 상관 루프 폐쇄 + 희소 자세 그래프 — gmapping 의 격자와 spa 의 그래프를 하나로 |
 
 모든 알고리즘은 추상 클래스 기반으로 다음 세 가지가 자동으로 성립해야 한다:
 1. **Performance estimate** — 공통 metric(ATE RMSE, 매핑 계열은 map IoU와 landmark 오차)을 benchmark runner가 수집.
@@ -32,13 +33,13 @@ SLAM 알고리즘 구현체 + demo 모음 — 계보의 네 갈래(추정 기초
 ├── maps/
 │   ├── grid/                    #   GT occupancy grid (ROS 스타일 yaml + pgm)
 │   └── scenarios/               #   궤적 웨이포인트 + 센서/노이즈/시드 시나리오 (yaml, 맵 참조)
-├── configs/<section>/           # 알고리즘별 파라미터 yaml (언어 공용) — section ∈ {filtering, registration, filter_based, graph_based}
+├── configs/<section>/           # 알고리즘별 파라미터 yaml (언어 공용) — section ∈ {filtering, registration, features, filter_based, graph_based}
 ├── cpp/
 │   ├── CMakeLists.txt
 │   ├── include/slam/
 │   │   ├── core/                # estimator.hpp, params.hpp, trace.hpp, types.hpp, rng.hpp, sim.hpp, metrics.hpp
 │   │   ├── maps/                # occupancy_grid.hpp, pgm.hpp, loader.hpp (레이캐스트 포함)
-│   │   ├── filtering/  registration/  filter_based/  graph_based/    # 알고리즘 헤더 (사이트 섹션과 1:1)
+│   │   ├── filtering/  registration/  features/  filter_based/  graph_based/    # 알고리즘 헤더 (사이트 섹션과 1:1)
 │   │   └── src/                 # include/와 동일 구조의 구현
 │   ├── demos/                   # demo_<algo>.cpp — 실행 시 trace 파일 출력
 │   └── tests/                   # GoogleTest
@@ -47,7 +48,7 @@ SLAM 알고리즘 구현체 + demo 모음 — 계보의 네 갈래(추정 기초
 │   ├── slam/
 │   │   ├── core/                # estimator.py, params.py, trace.py, types.py, rng.py, sim.py, metrics.py
 │   │   ├── maps/                # cpp include/slam/maps/ 와 1:1 미러
-│   │   ├── filtering/  registration/  filter_based/  graph_based/    # 알고리즘 모듈 (사이트 섹션과 1:1)
+│   │   ├── filtering/  registration/  features/  filter_based/  graph_based/    # 알고리즘 모듈 (사이트 섹션과 1:1)
 │   │   └── demos/               # demo_<algo>.py — demo_common.run(name, factory) 조립만
 │   └── tests/                   # pytest
 └── tools/                       # Python. slam 패키지에 의존 (설치 후 사용)
@@ -61,7 +62,7 @@ SLAM 알고리즘 구현체 + demo 모음 — 계보의 네 갈래(추정 기초
 ### 의존 방향 (위반은 리뷰 Critical)
 - `core` 는 stdlib(+ numpy/Eigen)만 의존한다. 알고리즘 모듈을 알지 못한다. 시뮬레이터(`sim`)도 core 에 있다 — GT 궤적 재샘플, 오도메트리 노이즈, 빔 레이캐스트, 랜드마크 관측 생성은 알고리즘이 아니라 계약의 일부다.
 - `maps` 는 `core` 만 의존한다.
-- 알고리즘 모듈(네 갈래)은 `core` 의 추상 인터페이스(`Estimator`, `Observation`, 시뮬레이터가 만드는 `Step`)에만 의존한다. **구체 맵 클래스 직접 참조 금지**, 알고리즘 모듈 간 상호 의존 금지.
+- 알고리즘 모듈(다섯 갈래)은 `core` 의 추상 인터페이스(`Estimator`, `Observation`, 시뮬레이터가 만드는 `Step`)에만 의존한다. **구체 맵 클래스 직접 참조 금지**, 알고리즘 모듈 간 상호 의존 금지.
 - `tools/viz`, `tools/bench`, `tools/web_export` 는 trace/param/map 포맷(spec)과 `core`/`maps` 로더에만 의존한다. 알고리즘 내부 상태 접근 금지 — 시각화에 필요한 모든 정보는 trace 이벤트로 방출되어야 한다.
 - `demos` 는 최상위 조립 계층: 알고리즘 + 시나리오 + configs 를 묶기만 한다. 로직 금지.
 
@@ -69,6 +70,7 @@ SLAM 알고리즘 구현체 + demo 모음 — 계보의 네 갈래(추정 기초
 - C++과 Python은 **같은 설계를 각자 idiomatic 하게** 구현한다. 클래스/메서드 개념 이름, 파라미터 이름, trace 이벤트는 동일해야 한다 (표기만 언어 컨벤션).
 - 알고리즘 추가/변경은 원칙적으로 두 언어 동시 반영. 한쪽만 구현된 상태는 README parity 표에 명시하고 남겨두지 않는 것을 원칙으로 한다.
 - 언어 간 공유물(trace schema, param yaml, 맵 데이터, 시나리오)은 반드시 `spec/`, `configs/`, `maps/` 에 두고 양쪽에서 로드한다. 언어 디렉토리 안에 복제 금지.
+- **자체 이중 구현이 원칙, 실전 시스템은 래핑 허용**: 기본은 두 언어 자체 구현(비트 동일 계약이 자연히 성립). 원본 실전 시스템이 미러링하기엔 너무 크면(예: 팩터 그래프 최적화기) 유명한 라이브러리를 감싸 쓸 수 있다 — 단 두 언어가 **같은 네이티브 커널**을 부를 때만(bit-identical 계약 보존은 공식 바인딩 = 같은 C++ 코드일 때만 성립). 한쪽 언어에만 있는 라이브러리는 단일 언어 구현으로 parity 표에 명시. 개념 문서는 무엇을 감쌌든 핵심 수식과 알고리즘 골격을 직접 보여준다.
 - **난수 결정성**: 입자 필터·샘플링이 개입하는 모든 알고리즘은 `core/rng`(splitmix64 → uniform01 → Box-Muller)만 쓴다. Python/C++/TS 가 비트 단위로 같은 수열을 만든다(정수는 uint64 오버플로 보정 포함 동일 연산, float 는 float64 ). 시드는 시나리오 yaml 이 들고, 드로 순서가 계약의 일부다. 노이즈·입자 드로가 언어마다 다른 수열이면 parity 검증이 무너진다.
 - **초월함수 비트 동일 (libm 라우팅)**: Python 은 `math.sin/cos/atan2/log` = libSystem 스칼라 구현을 부르고 sqrt/floor 는 하드웨어 명령(정확한 반올림)이다. Apple clang 은 같은 인자의 `(sin(x), cos(x))` 호출 쌍을 SIMD 구현 `__sincos_stret` 로 접고 이 변형은 스칼라와 드문 입력에서 1 ulp 어긋난다(발견 사례: sin(0x1.f9cbc4269ab30p-2)). 그래서 C++ 은 sin/cos 를 dlsym 으로 해석한 함수 포인터(`core/libm`)로만 호출한다 — 접을 수 없게 만들어야 Python 과 같은 스칼라 구현을 부른다. atan2/log 는 쌍 접기가 없어 직접 libcall 그대로. 이 계약의 회귀 테스트가 양 언어의 libm 골든(test_rng)이다.
 
@@ -76,7 +78,8 @@ SLAM 알고리즘 구현체 + demo 모음 — 계보의 네 갈래(추정 기초
 - 자세는 `Pose(x, y, θ)` (world 좌표 미터/라디안), 오도메트리 명령은 `Twist(Δx, Δy, Δθ)` (로봇 프레임). 좌표계 변환(`⊕`, 역원)은 core 의 한 파일에서만 정의하고 양 언어가 같은 연산 순서를 미러한다.
 - 관측 타입은 둘 중 하나 — 알고리즘은 `required_capabilities()` 로 소비하는 센서 타입을 선언한다:
   - `BEAM`: 빔 스캔 = 정해진 fov 에 균일 간격 각도, GT 자세에서 DDA 레이캐스트로 얻은 끝점들(로봇 프레임). 노이즈는 빔 방향 거리 가우시안.
-  - `LANDMARKS`: 점 랜드마크 관측 `(id, bearing, range)` — association 은 논문처럼 주어진다고 정직하게 가정한다 (FastSLAM 원논문이 그렇다). id 는 시나리오의 목록 순서.
+  - `LANDMARKS`: 점 랜드마크 관측 `(id, bearing, range)` — association 은 논문처럼 주어진다고 정직하게 가정한다 (FastSLAM 원논문이 그렇다). id 는 시나리오의 목록 순서. 이 랜드마크가 어디서 오는지는 features 갈래(dbscan)가 가르친다.
+  - `IMU`(선형 가속도 + 각속도 샘플)는 라이다-관성 계열(fast_lio PR)과 함께 확장된다: 시나리오에 imu 노이즈 파라미터와 dt 가 늘고 Step 이 imu 샘플을 싣는다. 그때까지는 BEAM/LANDMARKS 뿐.
 - 시뮬레이터는 GT 궤적(웨이포인트를 `step_meters` 로 등아크 재샘플)에서 스텝마다 `Step(t, gt_pose, u_noisy, z)` 를 만든다. 알고리즘은 `u_noisy` 와 `z` 만 본다 — GT 는 시각화와 metric 의 몫이다.
 
 ### 파라미터 추상화
