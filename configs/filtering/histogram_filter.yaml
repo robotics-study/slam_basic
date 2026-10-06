@@ -1,16 +1,11 @@
-# histogram_filter — 이산 자세 공간(셀 × heading bin) 위의 완전한 Bayes 필터.
-# sigma_range 는 demo 가 시나리오 센서에서 주입한다(seed 와 같은 주입 계약).
+# histogram_filter — 이산 자세 공간(셀 × heading 격자) 위의 완전한 Bayes 필터.
+# beams/fov_deg/range_max/sigma_range 는 demo 가 시나리오 센서에서 주입한다(seed 와 같은 주입 계약).
+# heading 격자는 파라미터가 아니다: 빔 각도 눈금 step = radians(fov)/(beams−1) 을 전체 원으로
+# 확장한 격자(B = 2π/step)를 상태의 heading 축이 그대로 쓴다 — 정본 자세의 heading 이 격자점에
+# 정확히 올라야 우도의 기댓값이 노이즈만 남기고 소거된다. 시나리오는 beams−1 이 짝수여야 한다.
 algorithm: histogram_filter
 section: filtering
 params:
-  - name: heading_bins
-    type: int
-    default: 8
-    min: 2
-    max: 36
-    description: >-
-      heading 축 이산화 개수. bin b 는 [-π + b·(2π/B), -π + (b+1)·(2π/B)) 를 덮고,
-      상태는 (free cell × 전 bin) — 표 크기 = free 셀 수 × B.
   - name: p_slip
     type: float
     default: 0.1
@@ -19,12 +14,36 @@ params:
     description: >-
       예측 단계의 slip 확률. 명령된 이동을 따를 확률 (1-p_slip) 와 제자리에 남을 확률
       p_slip 을 섞는다 — 움직임 불확실성의 전부(관측은 노이즈, 운동은 slip+양자화).
+  - name: beams
+    type: int
+    default: 361
+    min: 3
+    max: 361
+    description: >-
+      빔 개수 — demo 가 시나리오 센서의 beams 로 주입한다. 우도의 기댓값 표의 열 수이자,
+      heading 격자의 눈금 간격(step = radians(fov)/(beams−1))을 결정한다.
+  - name: fov_deg
+    type: float
+    default: 360.0
+    min: 1.0
+    max: 360.0
+    description: >-
+      시야각(도) — demo 가 시나리오 센서의 fov_deg 로 주입한다. 관측 점을 빔 인덱스로
+      되돌리는 규칙과 동일하다. 전방향(360)이면 서명이 회전 동치 불가능해진다.
+  - name: range_max
+    type: float
+    default: 6.0
+    min: 0.1
+    description: >-
+      최대 측정 거리(m) — demo 가 시나리오 센서의 range_max 로 주입한다. 이보다 먼 광선은
+      miss — 점을 내지 않는다. 기댓값 표는 sentinel(range_max + resolution)로 저장한다.
   - name: sigma_range
     type: float
     default: 0.05
     min: 0.001
     description: >-
-      빔 거리 가우시안 σ (m) — demo 가 시나리오 센서의 sigma_range 로 주입한다.
-      갱신의 우도는 이 σ 의 Gaussian(관측 거리, 기댓값).
+      빔 거리 가우시안 σ (m) — demo 가 시나리오 센서의 sigma_range 로 주입한다. 갱신의
+      우도는 Gaussian(관측 거리, 기댓값). 상태가 격자 덕분에 정본 자세를 정확히 표현할 때만
+      이 σ 가 만족된다 — heading 격자가 빔 눈금과 같은 이유다.
 scenarios:
   - corridor01_back_and_forth
