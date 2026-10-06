@@ -37,7 +37,8 @@ ParamSet ParamSet::from_yaml(const std::string& path) {
   // A config declares which family (site section) its algorithm belongs to — a
   // config declaring anything else is stale. Mirrored in Python.
   if (set.section_ != "filtering" && set.section_ != "registration" &&
-      set.section_ != "filter_based" && set.section_ != "graph_based") {
+      set.section_ != "features" && set.section_ != "filter_based" &&
+      set.section_ != "graph_based") {
     fail("unknown section '" + set.section_ + "'");
   }
   // Scenario slugs this algorithm runs on — required list of scalars (possibly
