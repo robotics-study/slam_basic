@@ -134,8 +134,9 @@ def export_trace(algo: str, scenario: Path, params_path: Path) -> None:
     with tempfile.NamedTemporaryFile("w", suffix=".jsonl", delete=False) as tmp:
         trace = Path(tmp.name)
     try:
+        # The demo is a package module (relative imports) — run it as a module.
         cmd = [
-            sys.executable, str(REPO / "python" / "demos" / f"demo_{algo}.py"),
+            sys.executable, "-m", f"slam.demos.demo_{algo}",
             "--scenario", str(scenario),
             "--params", str(params_path),
             "--trace", str(trace),

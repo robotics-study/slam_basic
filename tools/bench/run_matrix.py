@@ -41,8 +41,9 @@ class Row:
 
 def _run_one(runner: str, config: Path, scenario_path: Path, algo: str) -> Row:
     if runner == "py":
-        demo = _REPO_ROOT / "python" / "demos" / f"demo_{algo}.py"
-        cmd = [sys.executable, str(demo)]
+        # The demo is a package module (relative imports) — run it as a module.
+        demo = _REPO_ROOT / "python" / "slam" / "demos" / f"demo_{algo}.py"
+        cmd = [sys.executable, "-m", f"slam.demos.demo_{algo}"]
     else:
         demo = _REPO_ROOT / "cpp" / "build" / "demos" / f"demo_{algo}"
         cmd = [str(demo)]
