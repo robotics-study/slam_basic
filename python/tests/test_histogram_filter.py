@@ -1,10 +1,14 @@
 """histogram_filter tests — the discrete-pose Bayes filter contract.
 
-The scenario run pins the exactness property: on the lattice-matched corridor the
-belief collapses to the TRUE state (a single cell × heading bin) and the estimated
-pose equals ground truth bit-for-bit. The unit tests pin the mechanics the exactness
-rests on: child-of-movement with slip mix + slide semantics, lattice-exact heading
-rotation, and param validation.
+Two scenario runs pin the two halves of the story. corridor01 (lattice-matched,
+uneven pillars) pins exactness: the belief collapses to the TRUE state (a single
+cell × heading bin) and the estimated pose equals ground truth bit-for-bit.
+corridor02 (periodic baffles, range-limited signature) pins honest multi-hypothesis
+behaviour: the first scan leaves exactly three equally-massed position hypotheses,
+the estimate starts at their mean — NOT at ground truth — and only asymmetric
+structure entering the sensor range collapses the belief back onto the true cell.
+The unit tests pin the mechanics both runs rest on: child-of-movement with slip
+mix + slide semantics, lattice-exact heading rotation, and param validation.
 
 The mini-grid is deliberately ASYMMETRIC (three free cells, no mirror partner): a
 single scan must exclude every wrong state. The earlier draft ["#..", ".#."] failed
@@ -154,3 +158,50 @@ def test_run_on_scenario_is_exact() -> None:
         total += dx * dx + dy * dy
     ate = math.sqrt(total / len(result.poses))
     assert ate < 1e-9  # exact to float rounding (the demo reports ~1.3e-16)
+
+
+def test_run_on_ambiguous_scenario_resolves_hypotheses() -> None:
+    """The ambiguity showcase: periodic baffles spaced 4 cells apart and a 2.5 m
+    range that never reaches the second-next face make the first scan's signature
+    an exact translate at c8/c12/c16 — so the belief keeps EXACTLY three nonzero
+    cells with bit-identical mass, and the readout is their mean (not ground
+    truth). Only when asymmetric structure enters the range does the belief
+    collapse onto the true cell again; from that step on the estimate is exact to
+    the bit again. The scenario sensor must be injected like the demo does — the
+    config default range_max 6.0 would dissolve the ambiguity by design."""
+    sc = load_scenario(REPO_ROOT / "maps" / "scenarios" / "corridor02_ambiguous.yaml")
+    episode = build_episode(
+        sc.grid, list(sc.waypoints), sc.step_meters, sc.sensor, None,
+        sc.sigma_xy, sc.sigma_theta, sc.seed,
+    )
+    params = ParamSet.from_yaml(REPO_ROOT / "configs" / "filtering" / "histogram_filter.yaml")
+    # The demo's injection contract — the scenario sensor overrides every default.
+    params.set("beams", int(sc.sensor.beams))
+    params.set("fov_deg", float(sc.sensor.fov_deg))
+    params.set("range_max", float(sc.sensor.range_max))
+    params.set("sigma_range", float(sc.sensor.sigma_range))
+
+    buf = io.StringIO()
+    est = HistogramFilter(params)
+    result = est.run(episode, TraceRecorder(buf))
+    assert len(result.poses) == len(episode.steps)
+
+    # t=0: exactly three nonzero cells (the translation triple), bit-identical mass,
+    # everything else exactly 0.0 — the ambiguity is exact, not smeared.
+    events = [json.loads(line) for line in buf.getvalue().splitlines()]
+    first_belief = next(e for e in events if e["event"] == "belief_updated")
+    nonzero = [(r, c, p) for r, c, p in first_belief["cells"] if p > 0.0]
+    assert [(r, c) for r, c, _ in nonzero] == [(3, 8), (3, 12), (3, 16)]
+    masses = [p for _, _, p in nonzero]
+    assert max(masses) - min(masses) == 0.0
+    # The readout is the mean of the three hypotheses — visibly NOT ground truth.
+    est0, gt0 = result.poses[0], episode.steps[0].gt
+    assert abs(est0.x - 6.25) < 1e-9 and abs(est0.y - 1.75) < 1e-9
+    assert est0.x != gt0.x
+
+    # Once the true position's second-next baffle face enters range_max, the wrong
+    # hypotheses eat sentinel penalties and die; from step 25 on the belief is a
+    # single state again and the estimate equals ground truth bit-for-bit.
+    for t in range(25, len(result.poses)):
+        assert result.poses[t].x == episode.steps[t].gt.x
+        assert result.poses[t].y == episode.steps[t].gt.y

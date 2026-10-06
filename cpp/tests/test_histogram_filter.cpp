@@ -1,5 +1,5 @@
 // histogram_filter contract tests — the C++ mirror of python/tests/test_histogram_filter.py.
-// The same five contracts, the same asymmetric mini-grid (a single scan must exclude
+// The same contracts, the same asymmetric mini-grid (a single scan must exclude
 // every wrong state), and bit-identical expectations: where Python asserts exact
 // float equality, EXPECT_EQ pins the same bits here.
 
@@ -243,4 +243,55 @@ TEST(HistogramFilter, RunOnScenarioIsExact) {
   }
   double ate = std::sqrt(total / static_cast<double>(result.poses.size()));
   EXPECT_LT(ate, 1e-9);  // exact to float rounding (the demo reports ~1.3e-16)
+}
+
+TEST(HistogramFilter, RunOnAmbiguousScenarioResolvesHypotheses) {
+  // The ambiguity showcase (mirror of the Python test): periodic baffles make the
+  // first scan's signature an exact translate at c8/c12/c16 — EXACTLY three nonzero
+  // cells with bit-identical mass, readout = their mean, and only asymmetric
+  // structure entering range_max collapses the belief back onto the true cell.
+  slam::maps::Scenario sc = slam::maps::load_scenario(
+      slam::test::repo_path("maps/scenarios/corridor02_ambiguous.yaml"));
+  Episode episode = slam::core::build_episode(sc.grid, sc.waypoints, sc.step_meters, sc.sensor,
+                                             nullptr, sc.sigma_xy, sc.sigma_theta, sc.seed);
+  ParamSet params =
+      ParamSet::from_yaml(slam::test::repo_path("configs/filtering/histogram_filter.yaml"));
+  // The demo's injection contract — the scenario sensor overrides every default.
+  params.set("beams", sc.sensor.beams);
+  params.set("fov_deg", sc.sensor.fov_deg);
+  params.set("range_max", sc.sensor.range_max);
+  params.set("sigma_range", sc.sensor.sigma_range);
+
+  std::ostringstream os;
+  TraceRecorder rec(os);
+  HistogramFilter est(params);
+  EstimateResult result = est.run(episode, &rec);
+  ASSERT_EQ(result.poses.size(), episode.steps.size());
+
+  // t=0: exactly three nonzero cells (the translation triple), bit-identical mass,
+  // everything else exactly 0.0 — the ambiguity is exact, not smeared.
+  std::vector<std::array<double, 3>> cells = parse_cells(os.str());
+  ASSERT_FALSE(cells.empty());
+  std::vector<std::array<double, 3>> nonzero;
+  for (const auto& c : cells) {
+    if (c[2] > 0.0) nonzero.push_back(c);
+  }
+  ASSERT_EQ(nonzero.size(), 3u);
+  EXPECT_EQ(nonzero[0][0], 3.0); EXPECT_EQ(nonzero[0][1], 8.0);
+  EXPECT_EQ(nonzero[1][0], 3.0); EXPECT_EQ(nonzero[1][1], 12.0);
+  EXPECT_EQ(nonzero[2][0], 3.0); EXPECT_EQ(nonzero[2][1], 16.0);
+  EXPECT_EQ(nonzero[0][2], nonzero[1][2]);
+  EXPECT_EQ(nonzero[1][2], nonzero[2][2]);
+  // The readout is the mean of the three hypotheses — visibly NOT ground truth.
+  EXPECT_NEAR(result.poses[0].x, 6.25, 1e-9);
+  EXPECT_NEAR(result.poses[0].y, 1.75, 1e-9);
+  EXPECT_NE(result.poses[0].x, episode.steps[0].gt.x);
+
+  // Once the true position's second-next baffle face enters range_max, the wrong
+  // hypotheses eat sentinel penalties and die; from step 25 on the belief is a
+  // single state again and the estimate equals ground truth bit-for-bit.
+  for (size_t t = 25; t < result.poses.size(); ++t) {
+    EXPECT_EQ(result.poses[t].x, episode.steps[t].gt.x);
+    EXPECT_EQ(result.poses[t].y, episode.steps[t].gt.y);
+  }
 }
