@@ -1,5 +1,6 @@
 # histogram_filter — 이산 자세 공간(셀 × heading 격자) 위의 완전한 Bayes 필터.
 # beams/fov_deg/range_max/sigma_range 는 demo 가 시나리오 센서에서 주입한다(seed 와 같은 주입 계약).
+# 아래 default 는 자리채우기일 뿐이다: corridor01 은 6.0, corridor02 는 2.5 를 그 자체로 선언한다.
 # heading 격자는 파라미터가 아니다: 빔 각도 눈금 step = radians(fov)/(beams−1) 을 전체 원으로
 # 확장한 격자(B = 2π/step)를 상태의 heading 축이 그대로 쓴다 — 정본 자세의 heading 이 격자점에
 # 정확히 올라야 우도의 기댓값이 노이즈만 남기고 소거된다. 시나리오는 beams−1 이 짝수여야 한다.
@@ -47,3 +48,4 @@ params:
       이 σ 가 만족된다 — heading 격자가 빔 눈금과 같은 이유다.
 scenarios:
   - corridor01_back_and_forth
+  - corridor02_ambiguous
