@@ -3,7 +3,7 @@
 // (beam: 빔 0..beams-1 순서; landmarks: id 오름차순, range then bearing) 다음에 다음 이동의
 // 오도메트리 노이즈를 그린다. 스텝 0은 도착한 명령이 없어 odom이 없고 마지막 스텝은 드로하지 않는다.
 import {GridMap, inBounds, occupiedAt, worldToCell} from "./grid"
-import {poseMinus, robotToWorld, segmentIntersectsRect, wrap} from "./geometry"
+import {poseMinus, segmentIntersectsRect, worldToRobot, wrap} from "./geometry"
 import {Rng} from "./rng"
 import {LandmarkObs, Point, Pose, SensorConfig, Twist} from "./trace/types"
 
@@ -46,7 +46,7 @@ export function resample(path: Point[], stepMeters: number): Pose[] {
         if (k + 1 < points.length) {
             theta = Math.atan2(points[k + 1][1] - points[k][1], points[k + 1][0] - points[k][0])
         } else {
-            theta = poses[poses.length - 1][2] // 마지막 점은 이전 heading 유지
+            theta = poses.length > 0 ? poses[poses.length - 1][2] : 0.0 // 마지막 점은 이전 heading 유지
         }
         poses.push([points[k][0], points[k][1], theta])
     }
@@ -165,7 +165,7 @@ function observe(rng: Rng, map: GridMap, gt: Pose, sensor: SensorConfig,
             if (rHit === null) continue // miss는 점을 내지 않는다
             const rNoisy = rHit + rng.gaussian(0.0, sensor.sigma_range)
             const e: Point = [gt[0] + Math.cos(phi) * rNoisy, gt[1] + Math.sin(phi) * rNoisy]
-            scan.push(robotToWorld(e, gt)) // 스캔 점은 로봇 프레임으로 저장된다
+            scan.push(worldToRobot(e, gt)) // 스캔 점은 로봇 프레임으로 저장된다 (world→robot)
         }
         return {scan}
     }
