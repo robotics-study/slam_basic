@@ -227,16 +227,25 @@ YamlNode Parser::parse_block(size_t& i, int min_indent) {
       if (b == "-") {
         ++i;
         node.seq.push_back(parse_block(i, indent + 1));
-      } else {
-        // An inline "- <content>" item: the content column becomes the block
-        // indent for that item, so following aligned lines join the same node.
-        const std::string& raw = lines[i];
-        int k = indent + 1;
-        while (k < static_cast<int>(raw.size()) && raw[k] == ' ') ++k;
-        size_t item_indent = static_cast<size_t>(k);
-        lines[i] = std::string(item_indent, ' ') + raw.substr(k);
-        node.seq.push_back(parse_block(i, static_cast<int>(item_indent)));
+        continue;
       }
+      // An inline "- <content>" item. A plain/quoted scalar with no key colon IS
+      // the whole item (a config's `scenarios:` list); map content (has a key
+      // colon) and flow content get the block treatment below: the content column
+      // becomes the block indent for that item, so following aligned lines join it.
+      std::string content = trim(b.substr(2));
+      if (!content.empty() && content[0] != '[' && content[0] != '{' &&
+          find_key_colon(content) == std::string::npos) {
+        node.seq.push_back(make_scalar(content));
+        ++i;
+        continue;
+      }
+      const std::string& raw = lines[i];
+      int k = indent + 1;
+      while (k < static_cast<int>(raw.size()) && raw[k] == ' ') ++k;
+      size_t item_indent = static_cast<size_t>(k);
+      lines[i] = std::string(item_indent, ' ') + raw.substr(k);
+      node.seq.push_back(parse_block(i, static_cast<int>(item_indent)));
     }
     return node;
   }

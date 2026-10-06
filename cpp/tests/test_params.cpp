@@ -15,8 +15,11 @@ namespace {
 
 std::string algo_yaml(const std::string& section = "filtering") {
   return slam::test::write_temp(
+      // Block-style scenarios list (a scalar block-sequence item — the real configs
+      // use this style, so the parser must handle it; flow lists stay covered by
+      // choices/waypoints elsewhere).
       "algo.yaml", "algorithm: algo\nsection: " + section +
-                       "\nscenarios: [corridor01_back_and_forth]\nparams:\n"
+                       "\nscenarios:\n  - corridor01_back_and_forth\nparams:\n"
                        "  - name: particles\n    type: int\n    default: 100\n    min: 8\n    max: "
                        "4096\n    description: particle count\n"
                        "  - name: sigma\n    type: float\n    default: 0.1\n    description: "
