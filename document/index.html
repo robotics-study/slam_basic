@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <!-- 스캔 팬 모티프 파비콘: 한 점에서 퍼져 나가는 빔과 궤적 점 — indigo→cyan -->
+    <link rel="icon"
+          href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3Crect width='24' height='24' rx='6' fill='%230b1020'/%3E%3Cpath d='M5.5 18.5L19 5' stroke='%23818cf8' stroke-width='1.6' stroke-linecap='round' opacity='.55' stroke-dasharray='2.4 2.2'/%3E%3Cpath d='M5.5 18.5L17.5 9.5' stroke='%23818cf8' stroke-width='1.6' stroke-linecap='round'/%3E%3Cpath d='M5.5 18.5L19 14' stroke='%2322d3ee' stroke-width='1.6' stroke-linecap='round' opacity='.9'/%3E%3Cpath d='M5.5 18.5L13 6.5' stroke='%2322d3ee' stroke-width='1.6' stroke-linecap='round' opacity='.7'/%3E%3Ccircle cx='5.5' cy='18.5' r='2.4' fill='%23818cf8'/%3E%3C/svg%3E"/>
+    <title>SLAM · Study</title>
+    <meta name="description"
+          content="Study notes on single-robot SLAM and state estimation, branch by branch: recursive Bayes filters (histogram filter, particle filter, MCL), scan registration (ICP, NDT), feature extraction (DBSCAN), filter-based SLAM (EKF-SLAM, FastSLAM, GMapping, FAST-LIO) and graph-based SLAM (SPA, pose graphs, Cartographer), with interactive visualizations and C++/Python implementations."/>
+    <meta name="keywords"
+          content="SLAM, State Estimation, Bayes Filter, Histogram Filter, Grid Mapping, Log-odds, Particle Filter, Monte Carlo Localization, MCL, KLD-sampling, Scan Registration, ICP, NDT, DBSCAN, EKF-SLAM, Rao-Blackwellized, FastSLAM, GMapping, FAST-LIO, LiDAR-Inertial, iSAM2, Sparse Pose Adjustment, Pose Graph, Graph SLAM, Cartographer, Robotics"/>
+    <meta name="author" content="robotics-study.github.io"/>
+    <meta name="theme-color" content="#0b1020"/>
+    <meta name="robots" content="index, follow"/>
+    <link rel="canonical" href="https://robotics-study.github.io/slam_basic/"/>
+    <!-- 언어별 대체 URL — 한국어는 ?lang=ko 쿼리로 표현된다. -->
+    <link rel="alternate" hreflang="en" href="https://robotics-study.github.io/slam_basic/"/>
+    <link rel="alternate" hreflang="ko" href="https://robotics-study.github.io/slam_basic/?lang=ko"/>
+    <link rel="alternate" hreflang="x-default" href="https://robotics-study.github.io/slam_basic/"/>
+
+    <!-- Open Graph / Twitter — 링크 공유 시 카드 미리보기. document.title 은 페이지 전환마다 갱신된다. -->
+    <meta property="og:type" content="website"/>
+    <meta property="og:locale" content="en_US"/>
+    <meta property="og:locale:alternate" content="ko_KR"/>
+    <meta property="og:site_name" content="SLAM · Study"/>
+    <meta property="og:title" content="SLAM · Study"/>
+    <meta property="og:description"
+          content="Single-robot SLAM and state estimation study notes by genealogy branch: Bayes filters (histogram, particle, MCL), registration (ICP, NDT), features (DBSCAN), filter-based SLAM (EKF-SLAM, FastSLAM, GMapping, FAST-LIO) and graph-based SLAM (SPA, pose graphs, Cartographer), in C++ and Python."/>
+    <meta property="og:url" content="https://robotics-study.github.io/slam_basic/"/>
+    <meta name="twitter:card" content="summary"/>
+    <meta name="twitter:title" content="SLAM · Study"/>
+    <meta name="twitter:description"
+          content="Single-robot SLAM study notes by genealogy branch: Bayes filters, scan registration, feature extraction, filter-based and graph-based SLAM — derived, proven, and implemented in C++ and Python."/>
+
+    <!-- 검색엔진용 구조화 데이터 -->
+    <script id="page-jsonld" type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "LearningResource",
+            "name": "SLAM · Study",
+            "description": "Study notes on single-robot SLAM and state estimation, branch by branch: recursive Bayes filters (histogram filter, particle filter, MCL), scan registration (ICP, NDT), feature extraction (DBSCAN), filter-based SLAM (EKF-SLAM, FastSLAM, GMapping, FAST-LIO) and graph-based SLAM (SPA, pose graphs, Cartographer), with interactive visualizations and C++/Python implementations.",
+            "url": "https://robotics-study.github.io/slam_basic/",
+            "inLanguage": ["en", "ko"],
+            "learningResourceType": "Study notes",
+            "about": ["Robotics", "SLAM", "State Estimation", "Bayes Filter", "Histogram Filter", "Grid Mapping", "Particle Filter", "Monte Carlo Localization", "Scan Registration", "ICP", "NDT", "DBSCAN", "EKF-SLAM", "FastSLAM", "GMapping", "FAST-LIO", "Sparse Pose Adjustment", "Pose Graph SLAM", "Cartographer"]
+        }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- 테마는 시스템 설정(prefers-color-scheme)을 그대로 따른다 — 토글/저장 없음. -->
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-G74419JHMK"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+
+        gtag('js', new Date());
+        // SPA: 초기 자동 page_view 는 끄고, 라우트 변경마다 앱에서 직접 보낸다 (libs/seo.ts).
+        gtag('config', 'G-G74419JHMK', {send_page_view: false});
+    </script>
+</head>
+<body>
+<div id="root" class="min-h-screen min-w-[300px] flex flex-col"></div>
+<script type="module" src="/src/index.tsx"></script>
+</body>
+</html>

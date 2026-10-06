@@ -1,0 +1,9 @@
+{
+  "name": "SLAM · Study",
+  "short_name": "SLAM",
+  "description": "Study notes on single-robot SLAM and state estimation, branch by branch: recursive Bayes filters (histogram filter, particle filter, MCL), scan registration (ICP, NDT), feature extraction (DBSCAN), filter-based SLAM (EKF-SLAM, FastSLAM, GMapping, FAST-LIO) and graph-based SLAM (SPA, pose graphs, Cartographer), with interactive visualizations and C++/Python implementations.",
+  "start_url": "/slam_basic",
+  "display": "standalone",
+  "background_color": "#0b1020",
+  "theme_color": "#0b1020"
+}
