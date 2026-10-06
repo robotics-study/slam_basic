@@ -61,5 +61,6 @@ def run(name: str, factory: Callable[[ParamSet], Estimator]) -> None:
         result = estimator.run(episode, recorder)
         metrics = evaluate(result, episode)
         recorder.run_finished(metrics)
-    # One-line JSON metrics on stdout (bench + web export read it).
-    print(json.dumps({"algorithm": name, **metrics}))
+    # One-line JSON on stdout (bench + web export read it): algorithm first, then
+    # metric keys SORTED — the same byte order C++'s std::map iteration emits.
+    print(json.dumps({"algorithm": name, **dict(sorted(metrics.items()))}))

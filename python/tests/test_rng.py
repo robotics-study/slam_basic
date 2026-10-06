@@ -4,9 +4,25 @@ These constants ARE the contract — C++ must reproduce them exactly (the C++ te
 suite asserts the same numbers). If a golden changes, every language mirror breaks
 on purpose."""
 
+import math
+
 import pytest
 
 from slam.core.rng import Rng
+
+
+def test_libm_scalar_golden() -> None:
+    """math.sin/math.cos ARE the scalar libSystem implementations — that is what C++
+    must reach too (it routes sin/cos through dlsym-resolved pointers; Apple clang
+    otherwise folds same-argument (sin, cos) pairs into __sincos_stret, whose SIMD
+    result differs from the scalar one by 1 ulp on rare inputs). This input is a
+    KNOWN divergence point: the pinned sin value here is what the SIMD fold does NOT
+    return — C++ reading the folded variant fails these goldens (the C++ test_rng
+    pins the same values through libm_sin/libm_cos).
+    """
+    x = float.fromhex("0x1.f9cbc4269ab30p-2")
+    assert math.sin(x) == float.fromhex("0x1.e57a6c8be62efp-2")
+    assert math.cos(x) == float.fromhex("0x1.c2cd1ba67a4fdp-1")
 
 
 def test_splitmix64_golden_u64() -> None:
