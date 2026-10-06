@@ -11,7 +11,11 @@ def _yaml(tmp_path, section="filtering") -> str:
         f"""
 algorithm: algo
 section: {section}
-scenarios: [corridor01_back_and_forth]
+# Block-style scenarios list (a scalar block-sequence item — the real configs use
+# this style, so the C++ mini-parser must handle it; flow lists stay covered by
+# choices/waypoints elsewhere.)
+scenarios:
+  - corridor01_back_and_forth
 params:
   - name: particles
     type: int
