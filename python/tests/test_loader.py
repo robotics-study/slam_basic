@@ -17,9 +17,12 @@ def test_load_real_grid() -> None:
 def test_load_beam_scenario() -> None:
     sc = load_scenario(REPO_ROOT / "maps" / "scenarios" / "corridor01_back_and_forth.yaml")
     assert sc.sensor.type == "beam"
-    assert sc.sensor.beams == 90 and sc.sensor.fov_deg == 180.0
+    assert sc.sensor.beams == 361 and sc.sensor.fov_deg == 360.0
     assert sc.sensor.sigma_bearing is None
     assert sc.landmarks is None
+    # Lattice-matched odometry: sub-quantum position noise, ZERO heading noise (the
+    # histogram lattice cannot represent a rotation finer than its own bin).
+    assert sc.sigma_xy == 0.05 and sc.sigma_theta == 0.0
     assert sc.step_meters == 0.5
     assert sc.seed == 42
     assert len(sc.waypoints) == 3
