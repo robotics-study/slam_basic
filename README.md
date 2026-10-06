@@ -19,6 +19,7 @@ visualization, deterministic bilingual traces, and a benchmark matrix (ATE · RP
 ![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB.svg)
 ![CMake](https://img.shields.io/badge/CMake-%E2%89%A53.20-064F8C.svg)
+![Tests](https://img.shields.io/badge/tests-44%20py%20%2B%2043%20cpp-brightgreen.svg)
 
 </div>
 
@@ -34,28 +35,38 @@ visualization, deterministic bilingual traces, and a benchmark matrix (ATE · RP
 - **🌐 인터랙티브 문서 사이트** — 브라우저 엔진은 구현체의 세 번째 미러이며, 저장소가 수출한 trace 는 parity 검증의 기준 자료로만 쓰인다.
 - **📦 실전 시스템 래핑** — 자체 이중 구현이 원칙이지만 원본 시스템이 너무 크면(팩터 그래프 최적화기 등) 유명한 라이브러리를 감싸 쓸 수 있다. 단 두 언어가 같은 네이티브 커널을 부를 때만 비트 동일 계약이 보존되고, 한쪽에만 있는 라이브러리는 단일 언어 구현으로 parity 표에 명시. 개념 문서는 무엇을 감쌌든 핵심 수식과 알고리즘 골격을 직접 보여준다.
 
-## 🗺️ 계보 (planned)
+## 🗺️ 구현 현황 (parity)
 
-| 섹션 | 알고리즘 | 원 논문 |
-|---|---|---|
-| filtering | Histogram filter | Thrun, Burgard & Fox 2005 (교과서 ch.4) |
-| filtering | Occupancy grid mapping (log-odds) | Moravec (1988) · Elfes (1989), log-odds 형식은 Thrun et al. (2005) |
-| filtering | Particle filter | Gordon, Salmond & Smith (1993) |
-| filtering | Monte Carlo Localization | Fox, Burgard, Dellaert & Thrun (1999) · KLD-sampling Pfaff et al. (2003) |
-| registration | ICP | Besl & McKay (TPAMI 1992) |
-| registration | NDT | Biber & Strasser (IROS 2003) |
-| features | DBSCAN | Ester, Kriegel, Sander & Xu (KDD 1996) · 해설 논문 Kriegel, Schubert & Zimek (WIREs DMKD 2017) |
-| filter_based | EKF-SLAM | Smith & Cheeseman (ICRA 1986) |
-| filter_based | FastSLAM 1.0 | Montemerlo, Thrun, Schlegle & Kuhn (AAAI 2002) |
-| filter_based | FastSLAM 2.0 | Montemerlo, Thrun, Koller & Wegbreit (JAIR 2003) |
-| filter_based | GMapping | Grisetti, Stachniss & Burgard (T-RO 2007) |
-| filter_based | Fast-LIO | Xu et al. (T-RO 2021) — 키프레임 + iSAM2 기반 라이다-관성 긴밀 결합 반복 칼만 필터 (2D 교육화) |
-| filter_based | Fast-LIO2 | Xu et al. (RA-L 2022) — 증분 k-d 트리, 키프레임 없는 점 직접 갱신 |
-| graph_based | SPA (pose graph) | Konolige (IROS 2001) |
-| graph_based | GraphSLAM (information form) | Grisetti, Kümmerle, Stachniss & Burgard (2010/2013) |
-| graph_based | Cartographer | Hess, Kohler, Rapp & Andrus (ICRA 2016) — 서브맵 + branch-and-bound 상관 루프 폐쇄 + 희소 자세 그래프 |
+✅ = 두 언어 구현 + trace parity 검증 완료 — 알고리즘 이름이 문서 사이트 페이지로 연결됩니다.
+아직 `—`인 행은 계보상의 계획이고, 구현되는 순서대로 ✅로 채워집니다.
 
-> 구현이 진행되면 이 표가 실제 parity 표(✅ ✅)로 바뀌고, 각 행의 알고리즘 페이지가 문서 사이트에 열린다.
+| 섹션 | 알고리즘 | C++ | Python | 원 논문 |
+|---|---|:---:|:---:|---|
+| filtering | [Histogram filter](https://robotics-study.github.io/slam_basic/algo/histogram_filter) | ✅ | ✅ | Cowgill (1970) · Thrun, Burgard & Fox 2005 (교과서) |
+| filtering | Occupancy grid mapping (log-odds) | — | — | Moravec (1988) · Elfes (1989), log-odds 형식은 Thrun et al. (2005) |
+| filtering | Particle filter | — | — | Gordon, Salmond & Smith (1993) |
+| filtering | Monte Carlo Localization | — | — | Fox, Burgard, Dellaert & Thrun (1999) · KLD-sampling Pfaff et al. (2003) |
+| registration | ICP | — | — | Besl & McKay (TPAMI 1992) |
+| registration | NDT | — | — | Biber & Strasser (IROS 2003) |
+| features | DBSCAN | — | — | Ester, Kriegel, Sander & Xu (KDD 1996) · 해설 논문 Kriegel, Schubert & Zimek (WIREs DMKD 2017) |
+| filter_based | EKF-SLAM | — | — | Smith & Cheeseman (ICRA 1986) |
+| filter_based | FastSLAM 1.0 | — | — | Montemerlo, Thrun, Schlegle & Kuhn (AAAI 2002) |
+| filter_based | FastSLAM 2.0 | — | — | Montemerlo, Thrun, Koller & Wegbreit (JAIR 2003) |
+| filter_based | GMapping | — | — | Grisetti, Stachniss & Burgard (T-RO 2007) |
+| filter_based | Fast-LIO | — | — | Xu et al. (T-RO 2021) — 키프레임 + iSAM2 기반 라이다-관성 긴밀 결합 반복 칼만 필터 (2D 교육화) |
+| filter_based | Fast-LIO2 | — | — | Xu et al. (RA-L 2022) — 증분 k-d 트리, 키프레임 없는 점 직접 갱신 |
+| graph_based | SPA (pose graph) | — | — | Konolige (IROS 2001) |
+| graph_based | GraphSLAM (information form) | — | — | Grisetti, Kümmerle, Stachniss & Burgard (2010/2013) |
+| graph_based | Cartographer | — | — | Hess, Kohler, Rapp & Andrus (ICRA 2016) — 서브맵 + branch-and-bound 상관 루프 폐쇄 + 희소 자세 그래프 |
+
+> 사이트 소스는 `document/` (React + Vite SPA). `main` 에 push 되면 GitHub Actions 가
+> 빌드해 GitHub Pages 로 배포합니다 (`.github/workflows/deploy.yml`).
+>
+> ```bash
+> cd document && yarn install && yarn dev     # 로컬 개발 서버
+> yarn build                                  # 배포 번들 (prerender + sitemap 포함)
+> node scripts/check-engine-parity.mjs        # 브라우저 엔진 ↔ python trace parity 검증
+> ```
 
 ## 🚀 빠른 시작
 

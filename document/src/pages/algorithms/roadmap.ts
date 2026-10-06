@@ -7,7 +7,17 @@ export interface AlgoBlurb {
     blurb: Localized<string>;
 }
 
-export const ALGO_BLURBS: AlgoBlurb[] = [];
+export const ALGO_BLURBS: AlgoBlurb[] = [
+    {
+        slug: "histogram_filter",
+        blurb: {
+            en: "The root of the genealogy: belief as an actual table over free cells × heading bins — " +
+                "exhaustive Bayes filtering, exact up to the discretization itself.",
+            ko: "계보의 뿌리: 자유 셀 × heading 빈 위에 실제 표가 되는 belief — 이산화 자체까지를"
+                + " 정확히 다루는 완전한 Bayes 필터링.",
+        },
+    },
+];
 
 // 대분류 — 홈의 큰 섹션이자 사이드바 disclosure 단위. 계보의 축은 하나다: 추정의 매개체가
 // 무엇이냐. filtering 은 두 절반(자세 belief, 지도 belief)을 분리해 가르치고, registration 은
