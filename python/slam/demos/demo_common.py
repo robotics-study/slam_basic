@@ -6,7 +6,10 @@ known only here) and `run_finished` (the metrics computed from the result agains
 ground truth). Everything between them is emitted by the estimator through the base
 Estimator.run template. A stochastic algorithm's `seed` param receives the scenario
 seed verbatim — sim noise and algorithm-internal streams then share the seed value
-but stay independent streams (spec/data_formats.md).
+but stay independent streams (spec/data_formats.md). Sensor params follow the same
+injection contract: a declared beams/fov_deg/range_max/sigma_range/sigma_bearing
+param is filled from the scenario's sensor block, and declaring a field the
+scenario lacks is an error.
 """
 
 from __future__ import annotations
@@ -39,6 +42,26 @@ def run(name: str, factory: Callable[[ParamSet], Estimator]) -> None:
     # scenario seed verbatim (contract — see module docstring).
     if params.has("seed"):
         params.set("seed", scenario.seed)
+    # Sensor params follow the same injection contract as seed: an algorithm sees the
+    # sensor ONLY through declared params, never by reading the scenario itself.
+    # Declaring a field the scenario's sensor lacks is an error — no silent defaults.
+    sensor = scenario.sensor
+    if params.has("beams"):
+        if sensor.beams is None:
+            raise ValueError(f"demo: {name} declares 'beams' but {args.scenario} has none")
+        params.set("beams", int(sensor.beams))
+    if params.has("fov_deg"):
+        if sensor.fov_deg is None:
+            raise ValueError(f"demo: {name} declares 'fov_deg' but {args.scenario} has none")
+        params.set("fov_deg", float(sensor.fov_deg))
+    if params.has("range_max"):
+        params.set("range_max", float(sensor.range_max))
+    if params.has("sigma_range"):
+        params.set("sigma_range", float(sensor.sigma_range))
+    if params.has("sigma_bearing"):
+        if sensor.sigma_bearing is None:
+            raise ValueError(f"demo: {name} declares 'sigma_bearing' but {args.scenario} has none")
+        params.set("sigma_bearing", float(sensor.sigma_bearing))
     episode = build_episode(
         scenario.grid,
         list(scenario.waypoints),

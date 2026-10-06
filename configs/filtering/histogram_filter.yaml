@@ -1,0 +1,30 @@
+# histogram_filter — 이산 자세 공간(셀 × heading bin) 위의 완전한 Bayes 필터.
+# sigma_range 는 demo 가 시나리오 센서에서 주입한다(seed 와 같은 주입 계약).
+algorithm: histogram_filter
+section: filtering
+params:
+  - name: heading_bins
+    type: int
+    default: 8
+    min: 2
+    max: 36
+    description: >-
+      heading 축 이산화 개수. bin b 는 [-π + b·(2π/B), -π + (b+1)·(2π/B)) 를 덮고,
+      상태는 (free cell × 전 bin) — 표 크기 = free 셀 수 × B.
+  - name: p_slip
+    type: float
+    default: 0.1
+    min: 0.0
+    max: 0.99
+    description: >-
+      예측 단계의 slip 확률. 명령된 이동을 따를 확률 (1-p_slip) 와 제자리에 남을 확률
+      p_slip 을 섞는다 — 움직임 불확실성의 전부(관측은 노이즈, 운동은 slip+양자화).
+  - name: sigma_range
+    type: float
+    default: 0.05
+    min: 0.001
+    description: >-
+      빔 거리 가우시안 σ (m) — demo 가 시나리오 센서의 sigma_range 로 주입한다.
+      갱신의 우도는 이 σ 의 Gaussian(관측 거리, 기댓값).
+scenarios:
+  - corridor01_back_and_forth

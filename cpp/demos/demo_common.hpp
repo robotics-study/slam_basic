@@ -21,7 +21,9 @@
 // from the estimator through the base Estimator::run template. A stochastic
 // algorithm's `seed` param receives the scenario seed verbatim — sim noise and
 // algorithm-internal streams then share the seed value but stay independent
-// streams (spec/data_formats.md).
+// streams (spec/data_formats.md). Sensor params follow the same injection contract:
+// a declared beams/fov_deg/range_max/sigma_range/sigma_bearing param is filled from
+// the scenario's sensor block, and declaring a field the scenario lacks is an error.
 namespace demo {
 
 struct Args {
@@ -66,6 +68,26 @@ inline int run(int argc, char** argv) {
   // A stochastic algorithm declares its own `seed` param; the demo injects the
   // scenario seed verbatim (contract — see module header).
   if (params.has("seed")) params.set("seed", static_cast<int>(sc.seed));
+  // Sensor params follow the same injection contract as seed: an algorithm sees the
+  // sensor ONLY through declared params, never by reading the scenario itself.
+  // Declaring a field the scenario's sensor lacks is an error — no silent defaults.
+  if (params.has("beams")) {
+    if (!sc.sensor.has_beams)
+      throw std::runtime_error("demo: declared 'beams' but the scenario sensor has none");
+    params.set("beams", static_cast<int>(sc.sensor.beams));
+  }
+  if (params.has("fov_deg")) {
+    if (!sc.sensor.has_fov_deg)
+      throw std::runtime_error("demo: declared 'fov_deg' but the scenario sensor has none");
+    params.set("fov_deg", sc.sensor.fov_deg);
+  }
+  if (params.has("range_max")) params.set("range_max", sc.sensor.range_max);
+  if (params.has("sigma_range")) params.set("sigma_range", sc.sensor.sigma_range);
+  if (params.has("sigma_bearing")) {
+    if (!sc.sensor.has_sigma_bearing)
+      throw std::runtime_error("demo: declared 'sigma_bearing' but the scenario sensor has none");
+    params.set("sigma_bearing", sc.sensor.sigma_bearing);
+  }
 
   slam::core::Episode episode =
       slam::core::build_episode(sc.grid, sc.waypoints, sc.step_meters, sc.sensor,
