@@ -1,0 +1,4 @@
+type: occupancy_grid
+image: corridor02.pgm         # 0(검정)=occupied, 255(흰색)=free
+resolution: 0.5       # meters / pixel → world 17 x 3.5 m
+origin: [0.0, 0.0]         # 이미지 좌하단 픽셀의 world pose — θ 는 쓰지 않는다

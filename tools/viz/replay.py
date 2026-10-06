@@ -224,11 +224,21 @@ def build_scene(trace_path: str) -> Scene:
     return scene
 
 
-def draw(ax: Axes, scene: Scene, cutoff: float) -> None:
-    """Render the accumulated state at normalized seq cutoff in [0, 1].
+def to_display(
+    p: Point, origin: tuple[float, float], resolution: float, height: int
+) -> tuple[float, float]:
+    """world point -> display cell units — the RAW world/res transform (y UP).
 
-    Display coords are cell units (row 0 = top): u = (x - origin_x)/res,
-    v = h - (y - origin_y)/res — identical to how the grid raster is drawn."""
+    The raster is drawn flipud + origin="lower", which already places cell row r on
+    the band [h-1-r, h-r) — exactly that cell's own world band — so a point lands on
+    its own cell only with the raw transform (mirrors web GridCanvas: same map, same
+    points). A second flip here would mirror points onto mirrored cells — invisible
+    on symmetric maps, wrong everywhere else (test_replay pins both halves)."""
+    return ((p[0] - origin[0]) / resolution, (p[1] - origin[1]) / resolution)
+
+
+def draw(ax: Axes, scene: Scene, cutoff: float) -> None:
+    """Render the accumulated state at normalized seq cutoff in [0, 1]."""
     import numpy as np
     from matplotlib.colors import LinearSegmentedColormap
     from matplotlib.patches import Ellipse
@@ -240,7 +250,7 @@ def draw(ax: Axes, scene: Scene, cutoff: float) -> None:
     res = grid.resolution
 
     def disp(p: Point) -> tuple[float, float]:
-        return ((p[0] - ox) / res, h - (p[1] - oy) / res)
+        return to_display(p, (ox, oy), res, h)
 
     grid_cmap = LinearSegmentedColormap.from_list("slam_grid", ["#0f172a", "#e2e8f0"])
     ax.imshow(

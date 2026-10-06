@@ -4,7 +4,7 @@ import TracePlayer from "../player/TracePlayer";
 import {loadScenario, LoadedScenario, ScenarioJson} from "../../libs/trace/load";
 import {buildScene} from "../../libs/trace/timeline";
 import {GridMap} from "../../libs/grid";
-import {ParamValue, TraceEvent} from "../../libs/trace/types";
+import {ParamValue, SensorConfig, TraceEvent} from "../../libs/trace/types";
 import {useTr} from "../../libs/i18n";
 
 // 라이브 sandbox — 페이지의 알고리즘을 브라우저에서 직접 돌린다. 저장소의 Python/C++
@@ -21,6 +21,23 @@ export interface ParamChip {
     key: string;
     label?: string;
     values: Array<number | boolean | string>;
+}
+
+// 데모 드라이버와 같은 주입 계약 (demos/demo_common.py): 선언된 센서 파라미터는
+// 시나리오의 센서 블록에서 채워진다 — 기본값은 자리채우기일 뿐이고, 없는 필드를
+// 선언한 것은 조용한 기본값이 아니라 오류다. (seed 는 deterministic 알고리즘엔 없다.)
+const SENSOR_KEYS = ["beams", "fov_deg", "range_max", "sigma_range", "sigma_bearing"] as const
+
+function injectSensor(defaults: Record<string, ParamValue>, sensor: SensorConfig): Record<string, ParamValue> {
+    const out = {...defaults}
+    for (const key of SENSOR_KEYS) {
+        if (key in defaults) {
+            const v = sensor[key]
+            if (v === undefined) throw new Error(`scenario sensor lacks "${key}" declared by the algorithm`)
+            out[key] = v
+        }
+    }
+    return out
 }
 
 export interface SandboxProps {
@@ -50,10 +67,11 @@ export const SandboxScene = ({presets, run, params: defaultParams, chips = [], l
         const name = presets.find((p) => p.name === presetName)?.name ?? presets[0].name
         loadScenario(name).then((l: LoadedScenario) => {
             if (cancelled) return
-            // 편집 대상 사본 (occupied 복사).
+            // 편집 대상 사본 (occupied 복사). 파라미터는 주입 계약대로 재구성 —
+            // 프리셋마다 센서 기본값이 다르다 (corridor02 의 range_max 2.5 등).
             setGrid({...l.grid, occupied: [...l.grid.occupied]})
             setScenario(l.scenario)
-            setParams(defaultParams)
+            setParams(injectSensor(defaultParams, l.scenario.sensor))
             setError(null)
         }).catch((e: unknown) => {
             if (!cancelled) setError(e instanceof Error ? e.message : String(e))

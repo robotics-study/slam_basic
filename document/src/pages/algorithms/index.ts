@@ -1,3 +1,4 @@
+import {lazy} from "react";
 import {IAlgoData} from "../../../types/global";
 
 // 알고리즘 메타데이터는 여기서만 관리한다. 콘텐츠 모듈은 lazy import 로 분리해 홈/목록
@@ -11,7 +12,23 @@ import {IAlgoData} from "../../../types/global";
 // 서브맵 상관을 그 위에 얹은 Cartographer.
 const data: IAlgoData[] = [
     // filtering — SLAM 의 두 절반을 분리해 가르치는 뿌리.
-    {slug: "histogram_filter", title: {en: "Histogram Filter", ko: "Histogram Filter"}, section: "filtering"},
+    {
+        slug: "histogram_filter",
+        title: {en: "Histogram Filter", ko: "Histogram Filter"},
+        section: "filtering",
+        supportedExample: {python: true, "c++": true},
+        contents: lazy(() => import("./filtering/histogram_filter")),
+        sections: [
+            {en: "From the Recursion to a Table", ko: "재귀에서 표로"},
+            {en: "A Beam Scan as a Likelihood", ko: "빔 스캔을 우도로"},
+            {en: "Properties and Complexity", ko: "성질과 복잡도"},
+            {en: "The Algorithm", ko: "알고리즘"},
+            {en: "Exact by Construction", ko: "구성으로 정확하다"},
+            {en: "Demo", ko: "Demo"},
+            {en: "Implementation", ko: "Implementation"},
+            {en: "References", ko: "References"},
+        ],
+    },
     {slug: "grid_mapping", title: {en: "Log-Odds Grid Mapping", ko: "Log-Odds Grid Mapping"}, section: "filtering"},
     {slug: "particle_filter", title: {en: "Particle Filter", ko: "Particle Filter"}, section: "filtering"},
     {slug: "mcl", title: {en: "Monte Carlo Localization", ko: "Monte Carlo Localization"}, section: "filtering"},

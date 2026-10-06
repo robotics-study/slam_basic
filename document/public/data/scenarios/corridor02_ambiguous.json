@@ -1,16 +1,16 @@
 {
-  "map": "../grid/corridor01.yaml",
+  "map": "../grid/corridor02.yaml",
   "path": [
     [
-      0.75,
+      4.25,
       1.75
     ],
     [
-      11.75,
+      13.25,
       1.75
     ],
     [
-      0.75,
+      4.25,
       1.75
     ]
   ],
@@ -19,7 +19,7 @@
     "type": "beam",
     "beams": 361,
     "fov_deg": 360.0,
-    "range_max": 6.0,
+    "range_max": 2.5,
     "sigma_range": 0.05
   },
   "odom_noise": {

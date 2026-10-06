@@ -30,11 +30,15 @@ TEST(Loader, LoadsBeamScenario) {
   Scenario sc = load_scenario(slam::test::repo_path("maps/scenarios/corridor01_back_and_forth.yaml"));
   EXPECT_EQ(sc.sensor.type, "beam");
   ASSERT_TRUE(sc.sensor.has_beams);
-  EXPECT_EQ(sc.sensor.beams, 90);
+  EXPECT_EQ(sc.sensor.beams, 361);
   ASSERT_TRUE(sc.sensor.has_fov_deg);
-  EXPECT_DOUBLE_EQ(sc.sensor.fov_deg, 180.0);
+  EXPECT_DOUBLE_EQ(sc.sensor.fov_deg, 360.0);
   ASSERT_FALSE(sc.sensor.has_sigma_bearing);
   ASSERT_FALSE(sc.has_landmarks);
+  // Lattice-matched odometry: sub-quantum position noise, ZERO heading noise (the
+  // histogram lattice cannot represent a rotation finer than its own bin).
+  EXPECT_DOUBLE_EQ(sc.sigma_xy, 0.05);
+  EXPECT_DOUBLE_EQ(sc.sigma_theta, 0.0);
   EXPECT_DOUBLE_EQ(sc.step_meters, 0.5);
   EXPECT_EQ(sc.seed, 42);
   EXPECT_EQ(sc.waypoints.size(), 3u);

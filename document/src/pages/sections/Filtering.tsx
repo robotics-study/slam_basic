@@ -3,39 +3,38 @@ import {T, useLang, useTr} from "../../libs/i18n";
 import {BlockMath, InlineMath} from "../../components/math/Tex";
 import Terms from "../../components/math/Terms";
 import CanvasFigure from "../../components/CanvasFigure";
-import {withAlpha} from "../../libs/trace/timeline";
+import {HEAT_LOW, PARTICLE_COLOR, mixHex, withAlpha} from "../../libs/trace/timeline";
 import {useCanvasColors} from "../../libs/useTheme";
 
 // filtering 갈래 소개 — SLAM 의 두 절반을 분리해 가르치는 뿌리 갈래. 정적 피겨 하나:
 // 같은 미지의 벽 앞에서 왼쪽은 알려진 지도, 가운데는 자세의 이산 belief(히스토그램),
 // 오른쪽은 같은 문제에 대한 표본 표현(입자).
 
-// 고정 픽셀 격자 (# = 점유). 세 패널이 같은 맵을 공유해야 "같은 문제, 다른 belief 표현"이
-// 눈에 들어온다.
+// 고정 픽셀 격자 (# = 점유) — corridor01 과 같은 구조: 균일한 한 셀 두께의 경계와
+// 중앙 행에 문이 난 기둥. 세 패널이 같은 맵을 공유해야 "같은 문제, 다른 belief 표현"이
+// 눈에 들어온다 — 그래서 belief 는 MAP 에서 파생한다 (따로 쓰지 않아 어긋날 수 없다).
+// 좌표 계약: 셀은 [row, col] (row 0 = 최상단), 입자는 [col, row] — 같은 읽기 순서.
 const MAP: string[] = [
-    "############",
-    "#....##....#",
-    "#.##..##..##",
-    "#.#........#",
-    "#.#..####..#",
-    "#....#.....#",
-    "############",
+    "#############",
+    "#...#...#...#",
+    "#...#...#...#",
+    "#...........#",
+    "#...#...#...#",
+    "#...#...#...#",
+    "#############",
 ];
 
-// 히스토그램 패널: 셀마다 점유 확률 (0..1) — unknown 은 옅고 알려진 벽은 짙다.
-const BELIEF: number[][] = [
-    [1, 1, 1, 0.05, 0.05, 1, 1, 0.05, 0.05, 0.05, 0.05, 1],
-    [1, 0.05, 0.05, 0.05, 0.05, 1, 1, 0.05, 0.9, 0.05, 0.05, 1],
-    [1, 0.05, 1, 1, 0.05, 1, 1, 0.05, 1, 1, 1, 1],
-    [1, 0.05, 1, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 1],
-    [1, 0.05, 1, 1, 1, 1, 0.05, 0.05, 0.9, 0.05, 0.05, 1],
-    [1, 0.05, 0.05, 1, 0.05, 0.05, 0.05, 0.05, 0.9, 0.05, 0.05, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-];
+// 자세 가설이 몰려 있는 핫스팟 자유 셀 ([row, col]) — belief 열과 입자 무더기가 같은
+// 곳을 가리킨다. 벽을 핫스팟에 두면 안 된다: 자세는 벽에 있을 수 없다.
+const HOT_CELLS: Array<[number, number]> = [[2, 10], [3, 10], [4, 10]];
 
-// 입자 패널: 같은 맵 위의 (x, y) 표본들 — 밀도가 belief 다.
+// 히스토그램 패널의 셀 확률: 핫스팟 0.9, 나머지 자유 셀은 옅게 (0.05) — MAP 에서 파생.
+const beliefAt = (r: number, c: number): number =>
+    HOT_CELLS.some(([hr, hc]) => hr === r && hc === c) ? 0.9 : 0.05;
+
+// 입자 패널: 같은 핫스팟 주위의 표본 — [col, row], MAP 과 같은 읽기 순서 (row 0 = 위).
 const PARTICLES: Array<[number, number]> = [
-    [8.6, 4.2], [9.1, 5.0], [8.8, 3.1], [9.4, 2.6], [8.2, 3.4], [9.9, 3.7],
+    [9.7, 2.8], [10.4, 3.6], [10.1, 4.3], [10.8, 2.5], [9.4, 3.4], [10.2, 2.9],
 ];
 
 const BeliefVsParticles = () => {
@@ -54,9 +53,11 @@ const BeliefVsParticles = () => {
                     for (let c = 0; c < MAP[0].length; c++) {
                         const occ = MAP[r][c] === "#";
                         if (!belief && !occ) continue;
-                        // 히스토그램: 셀마다 확률 — 짙을수록 점유 belief. unknown 은 아주 옅게.
-                        const p = belief ? BELIEF[r][c] : 0.9;
-                        ctx.fillStyle = withAlpha(colors.text, 0.06 + Math.min(1, p) * 0.72);
+                        // 히스토그램 패널: 벽은 세 패널 공통의 지도 색, 자유 셀에만 확률 열을
+                        // 얹는다 — 라이브 재생의 belief 히트맵과 같은 색 (HEAT_LOW → PARTICLE).
+                        ctx.fillStyle = occ
+                            ? withAlpha(colors.text, 0.78)
+                            : withAlpha(mixHex(HEAT_LOW, PARTICLE_COLOR, beliefAt(r, c)), 0.55);
                         ctx.beginPath();
                         ctx.rect(c * cell, r * cell, cell, cell);
                         ctx.fill();
@@ -87,7 +88,8 @@ const BeliefVsParticles = () => {
             <figure className="m-0">
                 <Stage width={w} height={h} listening={false}>
                     {gridLayer(false)}
-                    <Shape listening={false} fill={colors.accent} opacity={0.9} sceneFunc={(ctx, shape) => {
+                    <Shape listening={false} fill={PARTICLE_COLOR} opacity={0.9} sceneFunc={(ctx, shape) => {
+                        // 입자는 [col, row]: x 가 열 (col), y 가 행 (row, 위가 0) — 격자와 같은 축.
                         for (const [x, y] of PARTICLES) {
                             ctx.beginPath();
                             ctx.arc(x * cell, y * cell, 3.4, 0, Math.PI * 2);
