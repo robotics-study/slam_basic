@@ -10,8 +10,13 @@
 - 자세 합성과 역원은 고정 공식(양 언어 동일 연산 순서):
   - `⊕`: `x' = x_a + cos(θa)·dx − sin(θa)·dy`, `y' = y_a + sin(θa)·dx + cos(θa)·dy`, `θ' = wrap(θa + dθ)`
   - 오도메트리 명령은 항상 **로봇 프레임** `(dx, dy, dθ)`: `u_t = gt_{t−1}⁻¹ ⊕ gt_t` (아래 정의).
-  - `wrap(a)` = 각도를 (−π, π] 로 접는다: `a − 2π·floor((a + π) / 2π)` — 양 언어 동일식.
+  - `wrap(a)` = 각도를 [−π, π) 로 접는다: `a − 2π·floor((a + π) / 2π)` — 양 언어 동일식. 식 자체가 a = π 에서 −π 을
+    내므로 도달 범위는 **닫힌 −π, 열린 π** 다.
 - 숫자는 parse 후 값으로 비교한다 (Python `5.0` 과 C++ `5` 는 같은 값; 정수는 양쪽 모두 정수 바이트).
+- 초월함수도 비트 동일 계약의 일부다: Python 은 `math.sin/cos/atan2/log` (libSystem 스칼라), sqrt/floor 는 하드웨어
+  명령(정확한 반올림)을 쓴다. C++ 는 sin/cos 를 **dlsym 으로 해석한 함수 포인터**로 호출한다 — Apple clang 이 같은 인자의
+  `(sin, cos)` 호출 쌍을 SIMD 구현 `__sincos_stret` 로 접어 드문 입력에서 1 ulp 어긋나기 때문 (C++ `core/libm.hpp`).
+  atan2/log 는 쌍 접기가 없어 직접 libcall 그대로, sqrt/floor 는 양쪽 모두 하드웨어 명령이라 그대로다.
 
 ## occupancy_grid (`maps/grid/`)
 
@@ -88,7 +93,9 @@ configs 에 자기 `seed` 파라미터(int)를 선언하고, demo 가 시나리�
 ### landmarks 센서 모델
 
 가시성 = GT pose 에서 랜드마크 점까지의 선분이 occupied 셀을 통과하지 않음(교차 판정 고정식: 세그먼트
-vs 셀 정사각형). 가시이면 `range = dist + εr`, `bearing = wrap(atan2(dy, dx) − θ_gt) + εβ`.
+vs 셀 정사각형). 가시이면 `range = dist + εr`,
+`bearing = wrap(wrap(atan2(dy, dx) − θ_gt) + εβ)` — 정확한 bearing 을 먼저 접고 노이즈를 더한 뒤 **다시** 끈다
+(바깥 wrap 없이는 노이즈가 π 를 넘어 새어나간다).
 
 ## 난수 (splitmix64 — 언어 간 비트 단위 동일)
 

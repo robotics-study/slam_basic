@@ -70,6 +70,7 @@ SLAM 알고리즘 구현체 + demo 모음 — 계보의 네 갈래(추정 기초
 - 알고리즘 추가/변경은 원칙적으로 두 언어 동시 반영. 한쪽만 구현된 상태는 README parity 표에 명시하고 남겨두지 않는 것을 원칙으로 한다.
 - 언어 간 공유물(trace schema, param yaml, 맵 데이터, 시나리오)은 반드시 `spec/`, `configs/`, `maps/` 에 두고 양쪽에서 로드한다. 언어 디렉토리 안에 복제 금지.
 - **난수 결정성**: 입자 필터·샘플링이 개입하는 모든 알고리즘은 `core/rng`(splitmix64 → uniform01 → Box-Muller)만 쓴다. Python/C++/TS 가 비트 단위로 같은 수열을 만든다(정수는 uint64 오버플로 보정 포함 동일 연산, float 는 float64 ). 시드는 시나리오 yaml 이 들고, 드로 순서가 계약의 일부다. 노이즈·입자 드로가 언어마다 다른 수열이면 parity 검증이 무너진다.
+- **초월함수 비트 동일 (libm 라우팅)**: Python 은 `math.sin/cos/atan2/log` = libSystem 스칼라 구현을 부르고 sqrt/floor 는 하드웨어 명령(정확한 반올림)이다. Apple clang 은 같은 인자의 `(sin(x), cos(x))` 호출 쌍을 SIMD 구현 `__sincos_stret` 로 접고 이 변형은 스칼라와 드문 입력에서 1 ulp 어긋난다(발견 사례: sin(0x1.f9cbc4269ab30p-2)). 그래서 C++ 은 sin/cos 를 dlsym 으로 해석한 함수 포인터(`core/libm`)로만 호출한다 — 접을 수 없게 만들어야 Python 과 같은 스칼라 구현을 부른다. atan2/log 는 쌍 접기가 없어 직접 libcall 그대로. 이 계약의 회귀 테스트가 양 언어의 libm 골든(test_rng)이다.
 
 ### 상태와 측정의 계약
 - 자세는 `Pose(x, y, θ)` (world 좌표 미터/라디안), 오도메트리 명령은 `Twist(Δx, Δy, Δθ)` (로봇 프레임). 좌표계 변환(`⊕`, 역원)은 core 의 한 파일에서만 정의하고 양 언어가 같은 연산 순서를 미러한다.
