@@ -1,0 +1,26 @@
+{
+  "map": "../grid/room01.yaml",
+  "path": [
+    [
+      1.25,
+      1.75
+    ],
+    [
+      3.25,
+      1.75
+    ]
+  ],
+  "step_meters": 0.25,
+  "sensor": {
+    "type": "beam",
+    "beams": 91,
+    "fov_deg": 90.0,
+    "range_max": 3.5,
+    "sigma_range": 0.02
+  },
+  "odom_noise": {
+    "sigma_xy": 0.0,
+    "sigma_theta": 0.0
+  },
+  "seed": 42
+}

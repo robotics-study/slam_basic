@@ -80,7 +80,22 @@ const data: IAlgoData[] = [
         ],
     },
     // registration — 바퀴 없는 오도메트리.
-    {slug: "icp", title: {en: "Iterative Closest Point", ko: "Iterative Closest Point"}, section: "registration"},
+    {
+        slug: "icp",
+        title: {en: "Iterative Closest Point", ko: "Iterative Closest Point"},
+        section: "registration",
+        supportedExample: {python: true, "c++": true},
+        contents: lazy(() => import("./registration/icp")),
+        sections: [
+            {en: "Odometry Without Wheels", ko: "바퀴 없는 오도메트리"},
+            {en: "The Closed Form in 2D", ko: "2D 에서 폐형으로"},
+            {en: "Truncation, Aliasing, and the Capture Basin", ko: "절단, 알리아싱, 그리고 포획 영역"},
+            {en: "The Algorithm", ko: "알고리즘"},
+            {en: "Demo", ko: "Demo"},
+            {en: "Implementation", ko: "Implementation"},
+            {en: "References", ko: "References"},
+        ],
+    },
     {slug: "ndt", title: {en: "Normal Distributions Transform", ko: "Normal Distributions Transform"}, section: "registration"},
     // features — 랜드마크는 어디서 오는가.
     {slug: "dbscan", title: {en: "DBSCAN", ko: "DBSCAN"}, section: "features"},
