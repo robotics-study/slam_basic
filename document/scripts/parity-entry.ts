@@ -3,3 +3,4 @@
 // (params 는 run_started 의 그것 — seed 포함. 데모와 동일한 계약).
 export {parseGridMap} from "../src/libs/grid";
 export {runHistogramFilter} from "../src/libs/algorithms/histogram-filter";
+export {runGridMapping} from "../src/libs/algorithms/grid-mapping";

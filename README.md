@@ -19,7 +19,7 @@ visualization, deterministic bilingual traces, and a benchmark matrix (ATE · RP
 ![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB.svg)
 ![CMake](https://img.shields.io/badge/CMake-%E2%89%A53.20-064F8C.svg)
-![Tests](https://img.shields.io/badge/tests-44%20py%20%2B%2043%20cpp-brightgreen.svg)
+![Tests](https://img.shields.io/badge/tests-49%20py%20%2B%2048%20cpp-brightgreen.svg)
 
 </div>
 
@@ -43,7 +43,7 @@ visualization, deterministic bilingual traces, and a benchmark matrix (ATE · RP
 | 섹션 | 알고리즘 | C++ | Python | 원 논문 |
 |---|---|:---:|:---:|---|
 | filtering | [Histogram filter](https://robotics-study.github.io/slam_basic/algo/histogram_filter) | ✅ | ✅ | Cowgill (1970) · Thrun, Burgard & Fox 2005 (교과서) |
-| filtering | Occupancy grid mapping (log-odds) | — | — | Moravec (1988) · Elfes (1989), log-odds 형식은 Thrun et al. (2005) |
+| filtering | [Log-Odds Grid Mapping](https://robotics-study.github.io/slam_basic/algo/grid_mapping) | ✅ | ✅ | Moravec (1988) · Elfes (1989), log-odds 형식은 Thrun et al. (2005) |
 | filtering | Particle filter | — | — | Gordon, Salmond & Smith (1993) |
 | filtering | Monte Carlo Localization | — | — | Fox, Burgard, Dellaert & Thrun (1999) · KLD-sampling Pfaff et al. (2003) |
 | registration | ICP | — | — | Besl & McKay (TPAMI 1992) |
