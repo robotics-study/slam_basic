@@ -1,0 +1,107 @@
+# mcl — Monte Carlo Localization with KLD-sampling (MCL 자체는 Fox·Burgard·Dellaert·Thrun AAAI 1999;
+# 적응 표본 수는 Fox "Adapting the Sample Size in Particle Filters through KLD-sampling" IJRR 2003).
+# 입자 필터와 같은 지역 국소화(선언 셀 × heading 전체의 균일 사전분포)에, 표본 수의 「얼마나 많은가」를
+# 확률로 규정한다: 표본을 하나씩 그릴 때마다 자세 공간을 bin_xy × bin_xy × bin_theta 빈으로 나눠 처음
+# 밟은 빈을 세고(k), 그 k 로 KL 오차 상한 n_chi = (k−1)/2ε · Wilson–Hilferty(k) 를 갱신하고,
+# n ≥ n_chi 이자 n ≥ n_min 이면 그 스텝의 표본을 멈춘다(상한 max_particles). ε 는 KL 상한, 1−δ 는
+# 보증 확률 — z_q = Φ⁻¹(1−δ) 는 core/stats 의 Acklam 유리식(절대 오차 < 1.15e-9)에서 한 번만 계산한다.
+#
+# t=0 은 고정 크기(max_particles) 균일 사전분포에 첫 스캔 우도를 곱하고, t≥1 부터 KLD 루프가
+# 매 스텝 resample-move-reweight 를 돈다(조상 워크는 strict `>` 누적 가중치 워크 — 입자 필터와 같은
+# multinomial 리샘플; KLD 는 언제 멈추는가만 바꾼다). 시나리오의 odom_noise 는 0: 드리프트는 필터의
+# σ_xy/σ_θ 가 선언하고 입자가 직접 그린다. sigma_range/range_max 는 시나리오 센서에서 주입된다(주입 계약).
+algorithm: mcl
+section: filtering
+params:
+  - name: seed
+    type: int
+    default: 42
+    description: >-
+      입자 샘플링과 조상 워크의 splitmix64 스트림 — demo 가 시나리오의 seed 를 그대로 주입한다
+      (시뮬레이터의 노이즈 스트림과 같은 값, 별개의 스트림). KLD-MCL 은 결정적으로 재생되려면 이 seed 에 의존한다.
+  - name: x0
+    type: float
+    default: 4.25
+    description: >-
+      출발 셀의 중심 x — t=0 사전분포는 이 점이 속한 셀 안에서만 균일하다(지역 국소화; 포지션은 셀 하나로
+      알려져 있고 heading 은 전혀 모른다). 기본값은 시나리오 출발 셀 (r3,c8) 의 중심(정확한 이진 부동소수).
+  - name: y0
+    type: float
+    default: 1.75
+    description: 출발 셀 중심의 y — 위와 동일.
+  - name: epsilon
+    type: float
+    default: 0.1
+    min: 0.001
+    max: 1.0
+    description: >-
+      KL 오차 상한 ε — n_chi = (k−1)/(2ε) · (Wilson–Hilferty)³ 이므로 ε 이 작을수록 같은 k 에 더 많은
+      표본이 필요하다(논문 실험처럼 ε 를 조절하고 δ 는 고정하는 것이 합리적). 기본값 0.1 은 데모의 예산 노브.
+  - name: delta
+    type: float
+    default: 0.01
+    min: 0.0001
+    max: 0.5
+    description: >-
+      KL 보증의 실패 확률 δ — z_q = Φ⁻¹(1−δ) 를 한 번 계산해 둔다(기본값은 논문 실험의 (1−δ)=0.99 →
+      z_q = 2.326347874388028). 표본 수는 확률 1−δ 로 ε 안에 있다.
+  - name: bin_xy
+    type: float
+    default: 0.5
+    min: 0.05
+    description: >-
+      포지션 빈 변 길이(m) — 논문 실험의 Δ = 50cm×50cm×10° 중 포지션 쪽. 맵 해상도와 같은 값을 쓴다:
+      빈은 세계 좌표 격자이고, 헤딩 빈과 달리 위치 빈이 갈라지는 건 클러스터가 셀 경계를 건널 때뿐이다.
+  - name: bin_theta
+    type: float
+    default: 0.17453292519943295
+    min: 0.001
+    description: >-
+      헤딩 빈 폭(rad) — 정확히 10°(radians(10)). 전체 원은 36 개 빈. ±π seam 에서 클러스터가 두 빈으로
+      갈라지는 것은 정직한 아티팩트다: 빈은 세계 좌표 격자이고 각도는 그렇게 잘릴 수밖에 없다.
+  - name: n_min
+    type: int
+    default: 10
+    min: 1
+    max: 4096
+    description: >-
+      표본 수 바닥 — 논문 알고리즘의 n_min(기본값도 논문의 10). k 가 아직 작아 상한이 작아도 이 수까지는
+      그린다; k ≤ 1 일 때 n_chi = 0 이므로 실제로는 이 값이 멈춤 조건을 지배한다.
+  - name: max_particles
+    type: int
+    default: 800
+    min: 8
+    max: 4096
+    description: >-
+      t=0 사전분포의 입자 수이자 KLD 루프의 하드 상한. 적응 표본 수는 t≥1 부터 일하므로 고정 예산은
+      사전분포에만 실제로 쓰인다 — 이것이 「고정 N 은 운」이라는 이전 페이지의 교훈을 흡수하는 방식이다.
+  - name: range_max
+    type: float
+    default: 2.5
+    min: 0.1
+    description: >-
+      최대 측정 거리(m) — demo 가 시나리오 센서의 range_max 로 주입한다. 이보다 먼 광선은 miss — 점을 내지
+      않고, 입자의 기댓값은 sentinel(range_max + resolution) 그대로다.
+  - name: sigma_range
+    type: float
+    default: 0.3
+    min: 0.001
+    description: >-
+      빔 거리 가우시안 σ (m) — demo 가 시나리오 센서의 sigma_range 로 주입한다. 입자 필터 페이지와 같은
+      뭉툭한 우도: 위치 정확도의 바닥은 여전히 σ_r/√k 근처다 — KLD 는 표본 수를 절약하지 정확도를 만들지 않는다.
+  - name: sigma_xy
+    type: float
+    default: 0.05
+    min: 0.001
+    max: 0.5
+    description: >-
+      운동 모델의 위치 노이즈 σ — 필터가 도착한 twist 에 스스로 더하는 ε 의 폭(주입이 아니다). 입자마다
+      독립적으로 그려진다.
+  - name: sigma_theta
+    type: float
+    default: 0.05
+    min: 0.001
+    max: 3.14159265358979
+    description: 운동 모델의 헤딩 노이즈 σ (rad) — 입자마다 독립적으로 그려진다.
+scenarios:
+  - corridor03_drift

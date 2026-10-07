@@ -37,6 +37,17 @@ export const ALGO_BLURBS: AlgoBlurb[] = [
                 + " 선언된 셀 위의 지역 국소화.",
         },
     },
+    {
+        slug: "mcl",
+        blurb: {
+            en: "The branch's punchline: the sample count itself becomes a signal. Samples are drawn one at a"
+                + " time until the bins they occupy statistically certify coverage (KLD-sampling) — n(t)"
+                + " collapses when the belief concentrates and spikes again at ambiguity, at equal accuracy.",
+            ko: "갈래의 마무리: 표본 수 자체가 신호가 된다. 표본이 점유한 빈들이 커버를 통계적으로 보증할 때까지"
+                + " (KLD-sampling) 표본을 하나씩 그리고, 믿음이 조이면 n(t)는 붕괴하고 모호성에서 다시"
+                + " 솟구친다 — 같은 정확도에서.",
+        },
+    },
 ];
 
 // 대분류 — 홈의 큰 섹션이자 사이드바 disclosure 단위. 계보의 축은 하나다: 추정의 매개체가

@@ -63,7 +63,22 @@ const data: IAlgoData[] = [
             {en: "References", ko: "References"},
         ],
     },
-    {slug: "mcl", title: {en: "Monte Carlo Localization", ko: "Monte Carlo Localization"}, section: "filtering"},
+    {
+        slug: "mcl",
+        title: {en: "Monte Carlo Localization", ko: "Monte Carlo Localization"},
+        section: "filtering",
+        supportedExample: {python: true, "c++": true},
+        contents: lazy(() => import("./filtering/mcl")),
+        sections: [
+            {en: "How Many Samples Are Enough?", ko: "표본은 얼마나 충분한가"},
+            {en: "From Coverage to a Bound", ko: "커버에서 상한으로"},
+            {en: "The Quantile in Closed Form", ko: "폐형이 된 양자화"},
+            {en: "The Algorithm", ko: "알고리즘"},
+            {en: "Demo", ko: "Demo"},
+            {en: "Implementation", ko: "Implementation"},
+            {en: "References", ko: "References"},
+        ],
+    },
     // registration — 바퀴 없는 오도메트리.
     {slug: "icp", title: {en: "Iterative Closest Point", ko: "Iterative Closest Point"}, section: "registration"},
     {slug: "ndt", title: {en: "Normal Distributions Transform", ko: "Normal Distributions Transform"}, section: "registration"},
