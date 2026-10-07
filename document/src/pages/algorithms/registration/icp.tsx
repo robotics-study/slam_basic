@@ -305,7 +305,7 @@ run(step):
                     <p>
                         Cycle the chips to see what actually does the work:{" "}
                         <code>max_iters</code> 64 → 1 pins a single pass under identity — aliased lattice pairs carry the estimate they are
-                        given (+0.11 per step instead of +0.25) and ATE jumps to 0.477; iteration is a contraction toward the honest fixed
+                        given (+0.11 at t=1 instead of +0.25) and ATE jumps to 0.477; iteration is a contraction toward the honest fixed
                         point, not polish. <code>d_max</code> 1.0 → 0.25 tightens truncation around the true pair distance and moves the
                         metrics only slightly (ATE ≈ 0.020) — confirming it is a safety net here, not a knob. The pinned unit tests show what
                         this scenario hides by design: one outlier pair with <InlineMath math="d_{\max}=20"/> drags the mean to −3.375, and a
@@ -321,7 +321,7 @@ run(step):
                     </p>
                     <p>
                         칩을 돌려 실제로 일이 일어나는 곳을 봐라: <code>max_iters</code> 64 → 1 은 정체 아래 단일 패스를 못 박고 — 알리아싱된 격자 쌍은
-                        주어진 추정을 그대로 나르고(스텝당 +0.25 대신 +0.11) ATE 는 0.477 로 뛴다; 반복은 정직한 고정점으로의 수축이지 마감이 아니다.{" "}
+                        주어진 추정을 그대로 나르고(t=1 에서 +0.25 대신 +0.11) ATE 는 0.477 로 뛴다; 반복은 정직한 고정점으로의 수축이지 마감이 아니다.{" "}
                         <code>d_max</code> 1.0 → 0.25 는 절단을 참 쌍 거리 근처로 조이고 지표를 살짝 움직일 뿐(ATE ≈ 0.020) — 여기선 노브가 아니라 안전장치임을
                         확인시킨다. 못 박힌 단위 테스트는 이 시나리오가 설계로 감춘 것을 보여준다: 이상치 쌍 하나에 <InlineMath math="d_{\max}=20"/>이면 평균이
                         −3.375 로 끌려가고, 변위보다 가는 격자는 잘못된 고정점(+0.1)을 정확히 못 박는다.
