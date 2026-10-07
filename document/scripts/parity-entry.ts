@@ -4,3 +4,4 @@
 export {parseGridMap} from "../src/libs/grid";
 export {runHistogramFilter} from "../src/libs/algorithms/histogram-filter";
 export {runGridMapping} from "../src/libs/algorithms/grid-mapping";
+export {runParticleFilter} from "../src/libs/algorithms/particle-filter";
