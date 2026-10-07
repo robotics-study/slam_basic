@@ -128,14 +128,16 @@ std::vector<std::array<double, 4>> parse_particles(const std::string& line) {
   return out;
 }
 
-// Parse the [x, y, θ] pose and [sx, sy, sθ] cov of one pose_estimated line.
+// Parse the [x, y, θ] pose and [sx, sy, sθ] cov of one pose_estimated line. The
+// key ENDS at ':' (no bracket): the loop's first ++pos consumes the array's '[',
+// later ones the separators — the flat-array counterpart of parse_particles.
 std::array<double, 3> parse_triple(const std::string& line, const char* key) {
   size_t pos = line.find(key);
   if (pos == std::string::npos) return {};
   pos += std::strlen(key);
   std::array<double, 3> out{};
   for (int k = 0; k < 3; ++k) {
-    ++pos;  // skip '[' or ','
+    ++pos;  // skip '[' (first value) or ',' (later ones)
     char* end = nullptr;
     double v = std::strtod(line.c_str() + pos, &end);
     EXPECT_NE(end, line.c_str() + pos) << "unparsable triple value";
@@ -378,8 +380,8 @@ TEST(ParticleFilter, RunOnScenarioConvergesFromTheBlob) {
   std::vector<std::vector<std::array<double, 4>>> clouds;
   for (const std::string& line : lines) {
     if (line.find("\"pose_estimated\"") != std::string::npos) {
-      poses.push_back(parse_triple(line, "\"pose\":["));
-      covs.push_back(parse_triple(line, "\"cov\":["));
+      poses.push_back(parse_triple(line, "\"pose\":"));
+      covs.push_back(parse_triple(line, "\"cov\":"));
     } else if (line.find("\"particles_updated\"") != std::string::npos) {
       clouds.push_back(parse_particles(line));
     }
