@@ -59,7 +59,8 @@ from ..core.geometry import pose_compose, wrap
 from ..core.params import ParamSet
 from ..core.rng import Rng
 from ..core.sim import raycast
-from ..core.types import EstimateResult, Pose, Twist
+from ..core.trace import TraceRecorder
+from ..core.types import EstimateResult, Point, Pose, Step, Twist
 
 
 class ParticleFilter(Estimator):
@@ -133,7 +134,7 @@ class ParticleFilter(Estimator):
             self._y[i] = p.y
             self._theta[i] = p.theta
 
-    def _weight(self, scan: tuple) -> None:
+    def _weight(self, scan: tuple[Point, ...]) -> None:
         """Multiply every particle's weight by exp(ll − max ll); renormalize.
 
         ll is the sum over this step's scan points IN SCAN ORDER of the beam-model
@@ -213,7 +214,7 @@ class ParticleFilter(Estimator):
             self._x, self._y, self._theta = xs, ys, ths
             self._w = [self._inv_n] * self._n  # equal weights after resampling
 
-    def update(self, step, recorder) -> None:
+    def update(self, step: Step, recorder: TraceRecorder | None) -> None:
         """Move (if a command arrived), weight by the scan, resample when the cloud
         collapses, then read out — pose first, cloud second."""
         if not self._initialized:
@@ -264,5 +265,5 @@ class ParticleFilter(Estimator):
                 ],
             )
 
-    def finalize(self, recorder) -> EstimateResult:
+    def finalize(self, recorder: TraceRecorder | None) -> EstimateResult:
         return EstimateResult(poses=tuple(self._poses))

@@ -65,7 +65,7 @@ const ParticleFilterPage = () => {
                         Prediction becomes trivially exact — no discretization to apologize for: every sample just{" "}
                         <em>rides</em> the arriving command with its own drawn noise. This is what makes the filter{" "}
                         <strong>bootstrap</strong>: the proposal distribution is the motion model itself, no cleverness.
-                        And expectations become weighted sums — the readout in section 3. What sampling pays for it:
+                        And expectations become weighted sums — the readout comes in the next section. What sampling pays for it:
                         a hypothesis only survives if its predicted scan actually matches the observed one (section 4),
                         and coverage of the state space by finitely many samples is a <em>lottery</em> whose odds you
                         will compute below. The cost per step is{" "}
@@ -81,7 +81,7 @@ const ParticleFilterPage = () => {
                     <BlockMath math="\mathrm{bel}_t(x) \;\approx\; \sum_{i=1}^{N} w^i_t\, \delta(x - x^i_t)"/>
                     <p>예측은 원리적으로 정확해진다 — 사과할 이산화 따위 없으니까: 각 표본은 도착한 명령을 자기 노이즈와
                     함께 <em>태울</em> 뿐이다. 이것이 필터를 <strong>부트스트랩</strong>이라 부르는 이유다: 제안 분포가
-                    운동 모델 그 자체다, 재주 없음. 그리고 기댓값은 가중합이 된다 — 판독은 3절에. 표본이 치른 대가:
+                    운동 모델 그 자체다, 재주 없음. 그리고 기댓값은 가중합이 된다 — 판독은 다음 절에서. 표본이 치른 대가:
                     가설은 예측 스캔이 관측과 실제로 맞을 때만 살아남고(4절), 유한 표본의 상태공간 커버는 경품 추첨이고
                     그 확률은 아래에서 계산한다. 스텝당 비용은 <InlineMath math="K"/>빔에{" "}
                     <InlineMath math="O(N \cdot K)"/> 레이캐스트 — 지도 크기와 무관하고, 바로 그것이 격자가 할 수
@@ -305,7 +305,7 @@ const ParticleFilterPage = () => {
             />
             <Pseudocode code={`init: for i = 1..N (ascending draws):
       x^i ← ox + (col₀ + u₁)·res          # the declared start cell, uniform inside it
-      y^i ← oy + (row₀' + u₂)·res
+      y^i ← oy + (h − 1 − row₀ + u₂)·res
       θ^i ← u₃·2π − π                     # heading: everything from −π to π
       w^i ← 1/N
 
