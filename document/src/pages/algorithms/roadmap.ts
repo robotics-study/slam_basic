@@ -48,6 +48,18 @@ export const ALGO_BLURBS: AlgoBlurb[] = [
                 + " 솟구친다 — 같은 정확도에서.",
         },
     },
+    {
+        slug: "icp",
+        blurb: {
+            en: "Odometry without wheels: every arriving scan is aligned onto the previous one — nearest-neighbor"
+                + " correspondence under the current estimate, truncated at d_max, solved in closed form (centroid"
+                + " alignment plus one atan2) and composed. The absolute frame stays a declaration; only relative"
+                + " motion is measured.",
+            ko: "바퀴 없는 오도메트리: 도착한 스캔을 직전 스캔에 정렬한다 — 현재 추정 아래 최근접 대응, d_max 에서"
+                + " 절단하고, 폐형(중심 정렬 + atan2 하나)으로 풀어 합성한다. 절대 좌표는 선언으로 남고 상대 운동만"
+                + " 측정된다.",
+        },
+    },
 ];
 
 // 대분류 — 홈의 큰 섹션이자 사이드바 disclosure 단위. 계보의 축은 하나다: 추정의 매개체가

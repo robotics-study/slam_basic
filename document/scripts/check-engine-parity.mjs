@@ -51,6 +51,7 @@ const RUNNERS = {
     grid_mapping: engines.runGridMapping,
     particle_filter: engines.runParticleFilter,
     mcl: engines.runMcl,
+    icp: engines.runIcp,
 };
 
 // algo × scenario 조합. metricKeys 를 생략하면 python trace 의 모든 지표 키를 기본 tol 로
@@ -60,6 +61,7 @@ const CHECKS = [
     {algo: "grid_mapping", scenarios: ["office01_tour"]},
     {algo: "particle_filter", scenarios: ["corridor03_drift"]},
     {algo: "mcl", scenarios: ["corridor03_drift"]},
+    {algo: "icp", scenarios: ["room01_straight"]},
 ];
 
 const DEFAULT_TOL = 1e-9;
