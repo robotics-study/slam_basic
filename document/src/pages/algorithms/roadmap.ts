@@ -17,6 +17,15 @@ export const ALGO_BLURBS: AlgoBlurb[] = [
                 + " 정확히 다루는 완전한 Bayes 필터링.",
         },
     },
+    {
+        slug: "grid_mapping",
+        blurb: {
+            en: "The other half: belief over the MAP on a given pose — one scalar log-odds per cell, every " +
+                "beam endpoint adding +L where it lands and −L where it passes, unknown cells staying honestly unknown.",
+            ko: "다른 절반: 주어진 자세 위의 지도에 대한 belief — 셀마다 스칼라 log-odds 하나, 빔 끝점은"
+                + " 착지한 곳에 +L, 통과한 길 위에 −L을 더하고, 미지 셀은 정직하게 미지로 남는다.",
+        },
+    },
 ];
 
 // 대분류 — 홈의 큰 섹션이자 사이드바 disclosure 단위. 계보의 축은 하나다: 추정의 매개체가
