@@ -1,0 +1,56 @@
+# icp — 점-점 Iterative Closest Point(Besl & McKay, TPAMI 1992)를 스캔-투-스캔 페어링으로.
+# registration 갈래의 첫 회원: 오도메트리를 읽지 않는다. t=0 에 선언된 게이지 포즈(x0/y0/theta_deg
+# — 정본 출발 자세와 같은 값)를 그대로 채택하고, t≥1 에서 도착한 스캔을 이전 스캔에 맞춘다: 소스
+# 점을 스캔 순서로 돌며 현재 추정 아래 최근접 대상점에 짝짓고(타이는 낮은 인덱스), 현재 추정에서
+# 거리 d_max 초과 쌍은 폐기(B&M 의 truncated least squares — 새 구조가 부채꼴에 들어와 짝이 없는
+# 점은 정직하게 버린다), 남은 쌍 위에서 점-점 오차를 폐형으로 푼다(중심 정렬 + atan2 하나). 갱신이
+# eps 보다 작게 움직이면 고정점에 도달한 것이다. 게이지는 측정이 아니라 선언이다 — 절대 좌표계는
+# 아무도 재지 않는다, 상대 운동만 측정된다(grid_mapping 의 앵커와 같은 관례).
+algorithm: icp
+section: registration
+params:
+  - name: x0
+    type: float
+    default: 1.25
+    description: >-
+      게이지 출발 자세의 x — 등록은 상대 운동만 측정하므로 절대 좌표는 선언이다. 기본값은
+      시나리오 출발점과 같은 정확한 이진 부동소수; 데모는 정본과 같은 값을 주입하지 않고
+      여기 기본값 그대로 쓴다(추정과 정본의 차이가 곧 순수한 등록 오차).
+  - name: y0
+    type: float
+    default: 1.75
+    description: 게이지 출발 자세의 y — 중심선 y=1.75, 정확한 이진 부동소수.
+  - name: theta_deg
+    type: float
+    default: 0.0
+    description: >-
+      게이지 출발 heading(도) — math.radians(0.0) = 0.0, 정본 출발 heading 과 정확히 같다.
+  - name: d_max
+    type: float
+    default: 1.0
+    min: 0.25
+    description: >-
+      대응 절단 거리 — 현재 추정에서 거리가 이 값을 넘는 쌍은 폐기(B&M 의 truncated least
+      squares). 스텝 크기(0.25)와 노이즈보다 넉넉히 커야 참된 쌍이 살아남고, 새 구조가
+      부채꼴에 들어올 때 짝 없이 들어온 점이 정체로 끌어당기는 것을 막는다. 데모에서는
+      0.4~2.0 사이 어떤 값으로도 지표가 동일하다(참된 쌍은 전부 ~0.9 안에 있다) — 이진 탐색
+      가능한 매개변수가 아니라 안전장치다.
+  - name: eps
+    type: float
+    default: 1.0e-9
+    min: 1.0e-12
+    max: 0.1
+    description: >-
+      고정점 수렴 기준 — max(|Δdx|, |Δdy|, |Δθ|) ≤ eps 면 반복을 멈춘다. 쌍이 더 이상
+      바뀌지 않으면 폐형 해는 같은 값으로 되돌아오므로(부동소수 반올림 수준), 이 임계값은
+      사실상 "고정점에 닿았다"의 판정이다.
+  - name: max_iters
+    type: int
+    default: 64
+    min: 1
+    max: 1024
+    description: >-
+      스텝당 반복 상한 — 수렴은 보장되지 않는다(고정점일 뿐). 실제 데모에서는 대개 3회 안에
+      고정점에 닿고 상한은 도달된 적 없다; 상한이 손대는 것은 발산하는 퇴화 케이스뿐이다.
+scenarios:
+  - room01_straight
