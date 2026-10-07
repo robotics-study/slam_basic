@@ -8,9 +8,10 @@
 #include "slam/core/types.hpp"
 
 // particle_filter — the bootstrap filter (Gordon, Salmond & Smith 1993; the robot
-// localization formulation is Bourlak & Schulman 1996 and Fox, Burgard, Dellaert &
-// Thrun AAAI 1999, textbook form Thrun, Burgard & Fox 2005 ch. 4). The C++ mirror
-// of python/slam/filtering/particle_filter.py, operation for operation.
+// localization formulation is Fox, Burgard, Dellaert & Thrun AAAI 1999 and Dellaert,
+// Fox, Burgard & Thrun ICRA 1999, textbook form Thrun, Burgard & Fox 2005 ch. 4).
+// The C++ mirror of python/slam/filtering/particle_filter.py, operation for
+// operation.
 //
 // The filtering branch's third step: the histogram filter kept a probability for
 // every lattice state by brute force; this one keeps N SAMPLES instead — a weighted

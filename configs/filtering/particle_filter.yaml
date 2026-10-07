@@ -1,5 +1,6 @@
-# particle_filter — 부트스트랩 입자 필터(Thrun, Burgard & Fox 2005 ch. 4; 뿌리는 Gordon·Salmon
-# 의 부트스트랩 필터와 Bourlak·Schulman / Fox 등의 초기 Monte Carlo 국소화). 상태는 연속 자세
+# particle_filter — 부트스트랩 입자 필터(Thrun, Burgard & Fox 2005 ch. 4; 뿌리는 Gordon·Salmond·Smith
+# 의 부트스트랩 필터와 Fox·Burgard·Dellaert·Thrun(AAAI 1999) 및 Dellaert·Fox·Burgard·Thrun(ICRA 1999)
+# 의 초기 Monte Carlo 국소화). 상태는 연속 자세
 # (x, y, θ)이고 belief 는 표본 덩어리다: 매 스텝 입자마다 운동 노이즈를 그린다(x ⊕ (u + ε)),
 # 관측은 스캔 점마다 기댓값 raycast 의 가우시안으로 가중치를 곱하고, ESS < N/2 이면 체계적
 # 리샘플링으로 죽은 입자를 산 입자의 사본으로 바꾼다.

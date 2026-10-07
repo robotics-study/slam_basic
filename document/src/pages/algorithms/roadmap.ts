@@ -26,6 +26,17 @@ export const ALGO_BLURBS: AlgoBlurb[] = [
                 + " 착지한 곳에 +L, 통과한 길 위에 −L을 더하고, 미지 셀은 정직하게 미지로 남는다.",
         },
     },
+    {
+        slug: "particle_filter",
+        blurb: {
+            en: "The same recursion when the state cannot be enumerated: N weighted samples carry the belief,"
+                + " the motion model itself is the proposal (bootstrap), and systematic resampling replaces"
+                + " the marginalization the lattice could afford — local localization on a declared cell.",
+            ko: "상태를 열거할 수 없을 때의 같은 재귀: N개의 가중 표본이 belief를 나르고, 운동 모델 자체가"
+                + " 제안 분포가 되고(bootstrap), 체계적 리샘플링이 격자가 감당했던 주변화를 대체한다 —"
+                + " 선언된 셀 위의 지역 국소화.",
+        },
+    },
 ];
 
 // 대분류 — 홈의 큰 섹션이자 사이드바 disclosure 단위. 계보의 축은 하나다: 추정의 매개체가

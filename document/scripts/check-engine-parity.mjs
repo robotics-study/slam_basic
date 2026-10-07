@@ -46,13 +46,18 @@ const finalOf = (events) => events[events.length - 1];
 //   run(grid, scenario, params) → TraceEvent[]
 // (params 는 python demo 가 run_started 에 실어 보낸 파라미터 맵 그대로 — stochastic
 // 알고리즘의 seed 포함. 시나리오 seed 는 demo 가 주입하므로 여기선 건드리지 않는다.)
-const RUNNERS = {histogram_filter: engines.runHistogramFilter, grid_mapping: engines.runGridMapping};
+const RUNNERS = {
+    histogram_filter: engines.runHistogramFilter,
+    grid_mapping: engines.runGridMapping,
+    particle_filter: engines.runParticleFilter,
+};
 
 // algo × scenario 조합. metricKeys 를 생략하면 python trace 의 모든 지표 키를 기본 tol 로
 // 비교한다. 시나리오 슬러그는 public/data/scenarios/<slug>.json 의 그 이름이다.
 const CHECKS = [
     {algo: "histogram_filter", scenarios: ["corridor01_back_and_forth", "corridor02_ambiguous"]},
     {algo: "grid_mapping", scenarios: ["office01_tour"]},
+    {algo: "particle_filter", scenarios: ["corridor03_drift"]},
 ];
 
 const DEFAULT_TOL = 1e-9;
