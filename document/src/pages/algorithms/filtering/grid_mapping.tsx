@@ -315,9 +315,10 @@ walk(a, b):                                                     # raycast's step
                         estimator re-runs from step 0. The preset is a zigzag-and-spiral tour of the office map
                         that sweeps every face from both directions; it starts facing due west, which is why the
                         anchor heading is exactly <InlineMath math="\pi"/>. Watch the two halves of the lesson:
-                        the estimated trail rides ground truth to machine epsilon (<InlineMath math="ate_{rmse} \approx 10^{-16}"/>),
+                        the estimated trail equals ground truth bit-for-bit (<InlineMath math="ate_{rmse}"/> is
+                        exactly 0; <InlineMath math="rpe_{rmse}"/> is float noise at ~<InlineMath math="10^{-16}"/>),
                         while the map fills in face by face — and the sealed interiors stay blank, which is why{" "}
-                        <InlineMath math="map\_iou"/> lands near 0.93, not 1.
+                        <InlineMath math="map\_iou"/> lands near 0.91, not 1.
                     </p>
                     <p>
                         The only chip is <code>p_hit</code>. Try it and watch the metrics: they do not move at
@@ -334,10 +335,10 @@ walk(a, b):                                                     # raycast's step
                         순서이고(parity 체커가 지표를 <InlineMath math="10^{-9}"/>까지 비교한다). 셀을 드래그해 벽을
                         그리면 스캔이 바뀌고 추정이 스텝 0에서 다시 돈다. 프리셋은 오피스 맵을 지그재그+나선으로 훑으며
                         모든 면을 양쪽에서 스캔하는 투어이고, 정확히 서쪽으로 향하며 시작하니 앵커 heading 이 정확히{" "}
-                        <InlineMath math="\pi"/>다. 교훈의 두 절을 지켜보라: 추정 트레일은 기계 정밀도까지 정답을 타고
-                        (<InlineMath math="ate_{rmse} \approx 10^{-16}"/>), 지도는 면별로 채워지는데 — 막힌 내부와
-                        막힌 모서리는 계속 비어 있고, 그래서 <InlineMath math="map\_iou"/>가 1이 아니라 0.93 근처에
-                        앉는다.
+                        <InlineMath math="\pi"/>다. 교훈의 두 절을 지켜보라: 추정 트레일은 비트 단위로 정답과 같고
+                        (<InlineMath math="ate_{rmse}"/>는 정확히 0; <InlineMath math="rpe_{rmse}"/>는 ~<InlineMath math="10^{-16}"/>
+                        의 부동소수 노이즈), 지도는 면별로 채워지는데 — 막힌 내부와 막힌 모서리는 계속 비어 있고, 그래서
+                        <InlineMath math="map\_iou"/>가 1이 아니라 0.91 근처에 앉는다.
                     </p>
                     <p>
                         유일한 칩은 <code>p_hit</code> 이다. 만져보고 지표가 움직이지 않는 것을 봐라 — 대칭 모델에서는 모든
