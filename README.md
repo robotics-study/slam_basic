@@ -19,7 +19,7 @@ visualization, deterministic bilingual traces, and a benchmark matrix (ATE · RP
 ![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB.svg)
 ![CMake](https://img.shields.io/badge/CMake-%E2%89%A53.20-064F8C.svg)
-![Tests](https://img.shields.io/badge/tests-56%20py%20%2B%2054%20cpp-brightgreen.svg)
+![Tests](https://img.shields.io/badge/tests-66%20py%20%2B%2064%20cpp-brightgreen.svg)
 
 </div>
 
@@ -45,7 +45,7 @@ visualization, deterministic bilingual traces, and a benchmark matrix (ATE · RP
 | filtering | [Histogram filter](https://robotics-study.github.io/slam_basic/algo/histogram_filter) | ✅ | ✅ | Cowgill (1970) · Thrun, Burgard & Fox 2005 (교과서) |
 | filtering | [Log-Odds Grid Mapping](https://robotics-study.github.io/slam_basic/algo/grid_mapping) | ✅ | ✅ | Moravec (1988) · Elfes (1989), log-odds 형식은 Thrun et al. (2005) |
 | filtering | [Particle Filter](https://robotics-study.github.io/slam_basic/algo/particle_filter) | ✅ | ✅ | Gordon, Salmond & Smith (1993) · Thrun, Burgard & Fox 2005 (교과서) |
-| filtering | Monte Carlo Localization | — | — | Fox, Burgard, Dellaert & Thrun (1999) · KLD-sampling Pfaff et al. (2003) |
+| filtering | [Monte Carlo Localization](https://robotics-study.github.io/slam_basic/algo/mcl) | ✅ | ✅ | Fox, Burgard, Dellaert & Thrun (AAAI 1999) · Fox (IJRR 2003) |
 | registration | ICP | — | — | Besl & McKay (TPAMI 1992) |
 | registration | NDT | — | — | Biber & Strasser (IROS 2003) |
 | features | DBSCAN | — | — | Ester, Kriegel, Sander & Xu (KDD 1996) · 해설 논문 Kriegel, Schubert & Zimek (WIREs DMKD 2017) |

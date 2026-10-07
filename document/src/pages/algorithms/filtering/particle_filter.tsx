@@ -34,8 +34,10 @@ const ParticleFilterPage = () => {
                     Bayes filter changes: predict still pushes every hypothesis through the motion model, update
                     still multiplies in the sensor likelihood — the same beam model as the simulator's forward
                     model, evaluated at each particle's own pose. This is <strong>local</strong> localization:
-                    the prior is uniform over one declared cell with heading fully unknown. Deciding how many
-                    samples a <em>global</em> prior needs is the next page's question (MCL / KLD-sampling).
+                    the prior is uniform over one declared cell with heading fully unknown — and the budget is a
+                    fixed lottery: too few samples and the true mode dies before it is ever drawn. How many samples
+                    are enough, decided per step instead of at design time, is the next page's question
+                    (MCL / KLD-sampling).
                 </p>}
                 ko={<p>
                     이것은 필터링 갈래의 세 번째 단계다. histogram filter는 belief 벡터를 <em>격자</em> 상태마다
@@ -45,8 +47,9 @@ const ParticleFilterPage = () => {
                     격자가 감당했던 주변화를 리샘플링이 대체한다. Bayes 필터의 나머지는 아무것도 안 바뀐다: predict는
                     여전히 모든 가설을 운동 모델로 밀고, update는 여전히 센서 우도를 곱한다 — 시뮬레이터 순방향 모델과
                     같은 빔 모델을 입자 각자의 자세에서 평가한다. 이것은 <strong>지역</strong> 국소화다: 사전분포는
-                    선언된 셀 하나 위에서 균일하고 heading은 전혀 모른다. 전역 사전분포에 표본이 몇 개 필요한지
-                    판정하는 것은 다음 페이지(MCL / KLD-sampling)의 질문이다.
+                    선언된 셀 하나 위에서 균일하고 heading은 전혀 모른다 — 그리고 예산은 고정된 경품 추첨이다: 표본이
+                    너무 적으면 참된 모드는 그려지기도 전에 죽는다. 설계 시점이 아니라 스텝마다 표본이 몇 개면
+                    충분한지 판정하는 것은 다음 페이지(MCL / KLD-sampling)의 질문이다.
                 </p>}
             />
 
