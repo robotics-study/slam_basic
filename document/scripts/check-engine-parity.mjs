@@ -53,6 +53,7 @@ const RUNNERS = {
     mcl: engines.runMcl,
     icp: engines.runIcp,
     ndt: engines.runNdt,
+    dbscan: engines.runDbscan,
 };
 
 // algo × scenario 조합. metricKeys 를 생략하면 python trace 의 모든 지표 키를 기본 tol 로
@@ -64,6 +65,7 @@ const CHECKS = [
     {algo: "mcl", scenarios: ["corridor03_drift"]},
     {algo: "icp", scenarios: ["room01_straight"]},
     {algo: "ndt", scenarios: ["room02_diagonal"]},
+    {algo: "dbscan", scenarios: ["blobs01_line"]},
 ];
 
 const DEFAULT_TOL = 1e-9;
