@@ -19,7 +19,7 @@ visualization, deterministic bilingual traces, and a benchmark matrix (ATE · RP
 ![C++20](https://img.shields.io/badge/C%2B%2B-20-blue.svg)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB.svg)
 ![CMake](https://img.shields.io/badge/CMake-%E2%89%A53.20-064F8C.svg)
-![Tests](https://img.shields.io/badge/tests-86%20py%20%2B%2084%20cpp-brightgreen.svg)
+![Tests](https://img.shields.io/badge/tests-90%20py%20%2B%2088%20cpp-brightgreen.svg)
 
 </div>
 
@@ -49,7 +49,7 @@ visualization, deterministic bilingual traces, and a benchmark matrix (ATE · RP
 | registration | [Iterative Closest Point](https://robotics-study.github.io/slam_basic/algo/icp) | ✅ | ✅ | Besl & McKay (TPAMI 1992) · Arun, Huang & Blostein (TPAMI 1987) |
 | registration | [Normal Distributions Transform](https://robotics-study.github.io/slam_basic/algo/ndt) | ✅ | ✅ | Biber & Strasser (IROS 2003) · Magnusson, Lilienthal & Duckett (JFR 2007) |
 | features | [DBSCAN](https://robotics-study.github.io/slam_basic/algo/dbscan) | ✅ | ✅ | Ester, Kriegel, Sander & Xu (KDD 1996) · 해설 논문 Kriegel, Kröger, Sander & Zimek (WIREs DMKD 2011) |
-| filter_based | EKF-SLAM | — | — | Smith & Cheeseman (ICRA 1986) |
+| filter_based | [EKF-SLAM](https://robotics-study.github.io/slam_basic/algo/ekf_slam) | ✅ | ✅ | Smith & Cheeseman (IJRR 1986) · 해설 논문 Durrant-Whyte & Bailey (IEEE RAM 2006) |
 | filter_based | FastSLAM 1.0 | — | — | Montemerlo, Thrun, Schlegle & Kuhn (AAAI 2002) |
 | filter_based | FastSLAM 2.0 | — | — | Montemerlo, Thrun, Koller & Wegbreit (JAIR 2003) |
 | filter_based | GMapping | — | — | Grisetti, Stachniss & Burgard (T-RO 2007) |
