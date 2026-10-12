@@ -142,8 +142,9 @@ class ScanGrid(Protocol):
 class Episode:
     """Everything one estimator run consumes: the step stream (ground truth +
     noisy odometry + observations, drawn in contract order from the scenario seed),
-    the ground-truth landmark points (id = list order; None for beam scenarios —
-    visualization and metrics only), and the ground-truth grid."""
+    the ground-truth landmark points (id = list order; optional on EITHER sensor type
+    — a beam scenario may declare them too, and even then they are visualization and
+    metrics only, never an algorithm input), and the ground-truth grid."""
 
     steps: tuple[Step, ...]
     landmarks: tuple[Point, ...] | None

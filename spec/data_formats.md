@@ -51,8 +51,10 @@ sensor:
   range_max: 6.0             # 광선 최대 거리(m) / landmark 관측 가시 범위(m)
   sigma_range: 0.05          # beam: 빔 방향 거리 가우시안 σ(m). landmarks: range σ(m)
   sigma_bearing: 0.03        # landmarks 만: bearing 가우시안 σ(rad)
-landmarks:                   # landmarks 타입만: 점 랜드마크 목록 — id = 목록 순서(0부터)
-  - [4.5, 1.5]
+landmarks:                   # 선택(양쪽 타입 모두): GT 점 랜드마크 목록 — id = 목록 순서(0부터).
+  - [4.5, 1.5]             # landmarks 센서: 관측의 id 가 곧 이 순서. beam 시나리오: 측정·시각화
+                           # 전용(알고리즘은 절대 읽지 않는다) — features 갈래는 알고리즘의 발견 순서가
+                           # 이 목록 순서와 같도록 시나리오를 작성한다
 odom_noise:                  # 오도메트리 명령에 더하는 가우시안 (θ 는 rad)
   sigma_xy: 0.05
   sigma_theta: 0.035

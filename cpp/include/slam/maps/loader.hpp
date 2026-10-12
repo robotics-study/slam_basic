@@ -9,8 +9,9 @@
 namespace slam::maps {
 
 // One parsed scenario yaml: the map, the GT polyline (world coords), the arc
-// spacing, the sensor block, landmark points (id = list order; absent for beam),
-// the odometry noise sigmas and the splitmix64 seed. The loader parses; core/sim
+// spacing, the sensor block, landmark points (id = list order; optional on EITHER
+// sensor type — a beam scenario may declare GT points for scoring), the odometry
+// noise sigmas and the splitmix64 seed. The loader parses; core/sim
 // builds the Step stream from it (the loader never touches rng). Dispatch is on
 // the yaml `type` field, not the extension.
 struct Scenario {
