@@ -1,0 +1,62 @@
+# ndt — Normal Distributions Transform(Biber & Strasser, IROS 2003)을 스캔-투-필드 매칭으로.
+# registration 갈래의 두 번째 회원: 대응을 만들지 않는다. 기준 스캔을 셀별 확률 분포(평균 + 산포
+# 행렬)로 컴파일하고 도착한 스캔을 그 필드에 그대로 점수화한다. t=0 에서 선언된 게이지 포즈
+# (x0/y0/theta_deg — 정본 출발 자세와 같은 값)를 그대로 채택하고, t≥1 에서 복원된 twist 만 합성한다;
+# 오도메트리는 소비하지 않는다(ICP 와 같은 관례). 솔버: f = −score 의 뉴턴 단계 Δ(=(H+λI)⁻¹(−g),
+# 크래머 3×3)에 λ 을 실베스터 주소식이 모두 양수가 될 때까지 배로 늘리고, 엄격한 개선이 없으면 Δ를
+# 절반씩(이진 정확) 줄여 max|Δ| ≤ eps 면 고정점에서 선다 — 수렴은 보장이지 보증이 아니다.
+algorithm: ndt
+section: registration
+params:
+  - name: x0
+    type: float
+    default: 1.75
+    description: >-
+      게이지 출발 자세의 x — 등록은 상대 운동만 측정하므로 절대 좌표는 선언이다. 기본값은
+      시나리오 출발점과 같은 정확한 이진 부동소수; 데모는 정본과 같은 값을 주입하지 않고 여기
+      기본값 그대로 쓴다(추정과 정본의 차이가 곧 순수한 등록 오차).
+  - name: y0
+    type: float
+    default: 1.75
+    description: 게이지 출발 자세의 y — 중심선 y=1.75, 정확한 이진 부동소수.
+  - name: theta_deg
+    type: float
+    default: 0.0
+    description: >-
+      게이지 출발 heading(도) — math.radians(0.0) = 0.0, 정본 출발 heading 과 정확히 같다.
+  - name: cell_size
+    type: float
+    default: 0.5
+    min: 0.25
+    description: >-
+      분포 셀 크기 — 포획 범위는 d_max 같은 컷오프가 아니라 이 셀이 만드는 blob 의 폭 자체다.
+      지도 해상도(0.5)와 같은 기본값: 한 셀에 수직+수평 면이 섞이는 계단에서 모든 클러스터가
+      2차원 blob 이 된다.
+  - name: lam0
+    type: float
+    default: 1.0e-6
+    min: 1.0e-12
+    max: 1.0
+    description: >-
+      정칙화 시작값 — H+λI 의 실베스터 주소식이 모두 양수가 될 때까지 λ 를 배로 늘린다(H 의
+      원소가 유한하므로 유한 종료). 피크에서 멀리 떨어진 평탄부에서는 H 가 강하게 부정부호다 —
+      실측으로 스텝 1 반복 2 에서 고유값 [−859, +70675], λ 가 30번 배가되어 ≈1.07×10³ 에 닿고
+      나서야 풀이가 이어진다 — 그게 이 점수 표면의 모양이다.
+  - name: eps
+    type: float
+    default: 1.0e-9
+    min: 1.0e-12
+    max: 0.1
+    description: >-
+      고정점 수렴 기준 — 엄격한 개선 없이 max(|Δdx|, |Δdy|, |Δθ|) ≤ eps 에 닿으면 현재 추정을
+      그대로 반환하고 멈춘다. 절반씩 줄이기는 이진에서 정확하므로 나눗셈 반올림이 없다.
+  - name: max_iters
+    type: int
+    default: 64
+    min: 1
+    max: 1024
+    description: >-
+      스텝당 반복 상한 — 수렴은 보장되지 않는다(고정점일 뿐). 실제 데모에서는 스텝마다 8/13/6/11 회에
+      도달되고 상한(64)은 도달된 적 없다; 상한이 손대는 것은 발산하는 퇴화 케이스뿐이다.
+scenarios:
+  - room02_diagonal
