@@ -1,0 +1,50 @@
+# dbscan — Density-Based Spatial Clustering of Applications with Noise(Ester, Kriegel, Sander &
+# Xu, KDD 1996)를 features 갈래의 첫 회원으로. 이 갈래는 랜드마크가 어디서 오는지를 가르친다:
+# filter_based 계열이 association 을 주어진 것으로 소비하는 (id, bearing, range) 의 id 가 여기서
+# 태어난다 — 날 스캔 점을 밀도 클러스터로 묶고, id 를 발견 순서(씨앗 점의 인덱스 오름차순)로 매긴다.
+# 운동은 측정하지 않는다: 게이지 포즈(x0/y0/theta_deg — 정본 출발 자세와 같은 값)에 시나리오의
+# 오도메트리(σ=0, 정본과 정확히 일치)를 적분한 것이 추정 포즈이고, 스캔 점은 그 포즈로 world 에
+# 올려 누적한다(스테프 우선, 빔 오름차순). 매 스텝 누적점 전체를 다시 군집하므로 일찍 씨앗이
+# 잡힌 클러스터는 id 를 유지하고, 아직 드문 블롭은 core 가 되는 순간 뒤늦은 id 를 얻는다.
+algorithm: dbscan
+section: features
+params:
+  - name: x0
+    type: float
+    default: 0.75
+    description: >-
+      게이지 출발 자세의 x — 이 갈래는 운동을 측정하지 않고 오도메트리를 적분할 출발점만 선언한다.
+      기본값은 시나리오 출발점과 같은 정확한 이진 부동소수(σ=0 오도메트리이므로 추정이 정본과 같다).
+  - name: y0
+    type: float
+    default: 1.75
+    description: 게이지 출발 자세의 y — 위와 같음.
+  - name: theta_deg
+    type: float
+    default: 0.0
+    description: >-
+      게이지 출발 heading(도) — math.radians(0.0) = 0.0, 정본 출발 heading(atan2(0, +dx))과 정확히 같다.
+  - name: eps
+    type: float
+    default: 0.2
+    min: 0.05
+    max: 2.0
+    description: >-
+      밀도 반경 — dx²+dy² ≤ eps² (닫힌 공, sqrt 없음). 기본값 0.2 는 출발점에서 빔 간격 r·Δθ ≈ 0.07 을
+      여유로이 체인해 세 블롭 모두 스텝 0 에 core 이고, 블롭 사이는 갈라 놓는다. 칩으로 0.75 로
+      올리면 y 로 1 m 떨어진 A∪C 가 한 클러스터로 체인된다 — 추정 id 0 이 “A∪C”(중심점 y ≈ 1.75)가 되고
+      B 는 id 1 로 밀리고 정본 C 에는 추정이 아예 없어 landmark_rmse 0.2389 → 0.4279: 밀도 문턱이 곧
+      정체성이다.
+  - name: min_pts
+    type: int
+    default: 4
+    min: 1
+    max: 64
+    description: >-
+      core 판정 문턱 — 닫힌 eps-근방의 점 수(자기 자신 포함). 기본값 4 에서는 세 블롭 모두 스텝 0 에서
+      이미 core 이고 id 는 첫 프레임부터 방위각 순서 = 정본 순서로 태어난다. 칩으로 16 을 넣으면 스텝 0 에
+      아무것도 core 가 아니고(id 의 탄생이 스텝 2/2/3 으로 늦어진다 — 로봇이 거리를 좁히며 밀도가 오른다),
+      그래도 최종 랜드마크는 거의 안 움직인다(rmse 0.2404 대 0.2389): 문턱은 후보가 언제 존재하게 되는지를
+      결정하지 무엇이로 수렴하는지는 아니다 — 밀도 문턱이 곧 후보의 안정성이라는 것의 실측.
+scenarios:
+  - blobs01_line

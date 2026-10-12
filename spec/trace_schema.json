@@ -48,7 +48,7 @@
     "landmarks": {
       "type": "array",
       "items": { "$ref": "#/$defs/point" },
-      "description": "run_started 선택 (landmarks 시나리오): GT 랜드마크 좌표 [x, y] — 목록 순서가 id. 알고리즘은 좌표를 모른다(관측은 bearing/range 뿐), 재생기만 그린다."
+      "description": "run_started 선택 (landmarks 목록을 선언한 시나리오 — beam 에서도 선택 가능): GT 랜드마크 좌표 [x, y] — 목록 순서가 id. 알고리즘은 좌표를 모른다(beam 에는 관측 자체가 없다), 재생기와 metric 만 읽는다"
     },
     "t": {
       "type": "integer",
@@ -127,7 +127,7 @@
         },
         "additionalProperties": false
       },
-      "description": "landmarks_updated 전용: 현재 랜드마크 추정 [{id, x, y, sx?, sy?}] — id 는 run_started.landmarks 와 같은 목록 순서."
+      "description": "landmarks_updated 전용: 현재 랜드마크 추정 [{id, x, y, sx?, sy?}] — features 갈래에서 id 는 클러스터 발견 순서이고, 시나리오의 GT 목록은 그 순서로 작성된다(공통 id 가 metric 의 페어링)"
     },
     "i": {
       "type": "integer",

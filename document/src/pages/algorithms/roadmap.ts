@@ -72,6 +72,19 @@ export const ALGO_BLURBS: AlgoBlurb[] = [
                 + " 기어 올라가 같은 SE(2) 원소에 닿는다. 포획 범위는 blob 폭 자체가 된다.",
         },
     },
+    {
+        slug: "dbscan",
+        blurb: {
+            en: "Where landmarks come from: raw scan points density-clustered into stable candidates — a point is core"
+                + " when its closed eps-ball holds min_pts points including itself, noise is sticky by visit order, and"
+                + " each cluster's id is the ascending index of its first core seed. The branch measures no motion (pose ="
+                + " declared gauge ⊕ odometry); it exists so the landmark branches have an id to consume.",
+            ko: "랜드마크는 어디서 오는가: 날 스캔 점을 밀도 클러스터로 묶어 안정적인 후보를 만든다 — 닫힌 eps-공이 자기"
+                + " 자신을 포함 min_pts 개를 담으면 core, 노이즈는 방문 순서로 sticky, 클러스터의 id는 첫 core 씨앗의"
+                + " 오름차순 인덱스다. 이 갈래는 운동을 측정하지 않는다(포즈 = 선언된 게이지 ⊕ 오도메트리); 랜드마크"
+                + " 계열이 소비할 id를 만들기 위해 존재한다.",
+        },
+    },
 ];
 
 // 대분류 — 홈의 큰 섹션이자 사이드바 disclosure 단위. 계보의 축은 하나다: 추정의 매개체가

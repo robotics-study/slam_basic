@@ -39,7 +39,8 @@ def load_map(path: str | Path) -> OccupancyGrid2D:
 @dataclass(frozen=True)
 class Scenario:
     """One parsed scenario yaml: the map, the GT polyline (world coords), the arc
-    spacing, the sensor block, landmark points (id = list order; None for beam),
+    spacing, the sensor block, landmark points (id = list order; optional on EITHER
+    sensor type — a beam scenario may declare GT points for scoring),
     the odometry noise sigmas and the splitmix64 seed."""
 
     map_path: str  # resolved absolute path to the map yaml
@@ -66,8 +67,10 @@ def load_scenario(path: str | Path) -> Scenario:
     stype = sensor_raw.get("type")
     if stype not in ("beam", "landmarks"):
         raise ValueError(f"scenario {path} sensor.type must be beam|landmarks, got {stype!r}")
+    # Optional on EITHER sensor type: a beam scenario may declare GT landmark points
+    # too (the features branch scores against them — the algorithm never reads them).
     landmarks: tuple[Point, ...] | None = None
-    if stype == "landmarks":
+    if "landmarks" in raw:
         landmarks = tuple((float(p[0]), float(p[1])) for p in raw["landmarks"])
     sensor = SensorConfig(
         type=stype,

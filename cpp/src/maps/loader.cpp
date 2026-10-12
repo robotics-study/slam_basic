@@ -70,7 +70,9 @@ Scenario load_scenario(const std::string& path) {
     sc.sensor.has_sigma_bearing = true;
     sc.sensor.sigma_bearing = sensor_raw.at("sigma_bearing").as_double();
   }
-  if (stype == "landmarks") {
+  // Optional on EITHER sensor type: a beam scenario may declare GT landmark points
+  // too (the features branch scores against them — the algorithm never reads them).
+  if (root.has("landmarks")) {
     sc.has_landmarks = true;
     for (const YamlNode& p : root.at("landmarks").seq) {
       sc.landmarks.emplace_back(p.seq.at(0).as_double(), p.seq.at(1).as_double());

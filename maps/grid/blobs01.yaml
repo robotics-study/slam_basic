@@ -1,0 +1,9 @@
+# features 갈래의 정본 지도 — 벽 없는 블롭 필드. 방(room)이 아닌 이유: 이 갈래의 주제는 랜드마크가
+# 어디서 오는가고, 벽은 랜드마크가 아니라 거대한 클러스터가 되어 주제를 가린다. 셀 하나짜리 블롭 3개
+# 가 전부이고(정본은 maps/scenarios/blobs01_line.yaml), 빔은 블롭에 맞은 점만 낸다 — 미스는 점 없음.
+# 기하: 셀 중심 A (4.75,1.25), B (6.25,1.75), C (4.75,2.25) — GT 랜드마크 목록과 같은 점들(목록 순서 =
+# id = 발견 순서). row 0 이 맨 위 행이라 r3 가 C, r4 가 B, r5 가 A 다.
+type: occupancy_grid
+image: blobs01.pgm    # 0(검정)=occupied, 255(흰색)=free — row 0 = 맨 위 행(세계 y 가 가장 큼)
+resolution: 0.5       # meters / pixel → world 7.0 x 4.0 m
+origin: [0.0, 0.0]    # 이미지 좌하단 픽셀의 world pose — θ 는 쓰지 않는다

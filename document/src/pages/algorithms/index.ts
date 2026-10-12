@@ -113,7 +113,21 @@ const data: IAlgoData[] = [
         ],
     },
     // features — 랜드마크는 어디서 오는가.
-    {slug: "dbscan", title: {en: "DBSCAN", ko: "DBSCAN"}, section: "features"},
+    {
+        slug: "dbscan",
+        title: {en: "DBSCAN", ko: "DBSCAN"},
+        section: "features",
+        supportedExample: {python: true, "c++": true},
+        contents: lazy(() => import("./features/dbscan")),
+        sections: [
+            {en: "Where Landmarks Come From", ko: "랜드마크는 어디서 오는가"},
+            {en: "Density, Not Distance", ko: "거리가 아니라 밀도"},
+            {en: "The Algorithm", ko: "알고리즘"},
+            {en: "Demo", ko: "Demo"},
+            {en: "Implementation", ko: "Implementation"},
+            {en: "References", ko: "References"},
+        ],
+    },
     // filter_based — 추정기 안에 지도를 넣는다.
     {slug: "ekf_slam", title: {en: "EKF-SLAM", ko: "EKF-SLAM"}, section: "filter_based"},
     {slug: "fastslam_1", title: {en: "FastSLAM 1", ko: "FastSLAM 1"}, section: "filter_based"},
