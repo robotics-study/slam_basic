@@ -96,7 +96,22 @@ const data: IAlgoData[] = [
             {en: "References", ko: "References"},
         ],
     },
-    {slug: "ndt", title: {en: "Normal Distributions Transform", ko: "Normal Distributions Transform"}, section: "registration"},
+    {
+        slug: "ndt",
+        title: {en: "Normal Distributions Transform", ko: "Normal Distributions Transform"},
+        section: "registration",
+        supportedExample: {python: true, "c++": true},
+        contents: lazy(() => import("./registration/ndt")),
+        sections: [
+            {en: "Correspondence, Dissolved Into a Field", ko: "대응을 필드 속으로 녹이다"},
+            {en: "Newton on a Score Surface", ko: "점수 표면 위의 뉴턴"},
+            {en: "Why the Scenario Is a Staircase", ko: "왜 시나리오가 계단인가"},
+            {en: "The Algorithm", ko: "알고리즘"},
+            {en: "Demo", ko: "Demo"},
+            {en: "Implementation", ko: "Implementation"},
+            {en: "References", ko: "References"},
+        ],
+    },
     // features — 랜드마크는 어디서 오는가.
     {slug: "dbscan", title: {en: "DBSCAN", ko: "DBSCAN"}, section: "features"},
     // filter_based — 추정기 안에 지도를 넣는다.
