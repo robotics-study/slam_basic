@@ -9,3 +9,4 @@ export {runMcl} from "../src/libs/algorithms/mcl";
 export {runIcp} from "../src/libs/algorithms/icp";
 export {runNdt} from "../src/libs/algorithms/ndt";
 export {runDbscan} from "../src/libs/algorithms/dbscan";
+export {runEkfSlam} from "../src/libs/algorithms/ekf-slam";

@@ -85,6 +85,17 @@ export const ALGO_BLURBS: AlgoBlurb[] = [
                 + " 계열이 소비할 id를 만들기 위해 존재한다.",
         },
     },
+    {
+        slug: "ekf_slam",
+        blurb: {
+            en: "The map goes inside the estimator: pose plus every discovered landmark live in ONE augmented state with one dense covariance. " +
+                "Birth is augmentation, not an update — the mean is the exact back-projection (innovation exactly 0) and the covariance block is B⁻¹WB⁻ᵀ; " +
+                "re-observation of a known id then pulls the pose back through the correlation blocks. Association stays GIVEN, honestly — as in the original paper.",
+            ko: "추정기 안에 지도를 넣는다: 포즈와 발견된 모든 랜드마크가 하나의 증강 상태, 하나의 조밀 공분산 안에 산다. 출생은 갱신이 아니라 증분이다 —"
+                + " 평균은 정확한 역투영(혁신은 정확히 0)이고 공분산 블록은 B⁻¹WB⁻ᵀ; 알려진 id의 재관측이 상관 블록을 통해 포즈를 끌어당긴다. association은"
+                + " 정직하게 주어진 그대로 — 원논문처럼.",
+        },
+    },
 ];
 
 // 대분류 — 홈의 큰 섹션이자 사이드바 disclosure 단위. 계보의 축은 하나다: 추정의 매개체가

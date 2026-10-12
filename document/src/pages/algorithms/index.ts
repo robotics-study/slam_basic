@@ -129,7 +129,21 @@ const data: IAlgoData[] = [
         ],
     },
     // filter_based — 추정기 안에 지도를 넣는다.
-    {slug: "ekf_slam", title: {en: "EKF-SLAM", ko: "EKF-SLAM"}, section: "filter_based"},
+    {
+        slug: "ekf_slam",
+        title: {en: "EKF-SLAM", ko: "EKF-SLAM"},
+        section: "filter_based",
+        supportedExample: {python: true, "c++": true},
+        contents: lazy(() => import("./filter_based/ekf_slam")),
+        sections: [
+            {en: "The Map Lives Inside the Filter", ko: "지도가 필터 안에 산다"},
+            {en: "Birth Is Not an Update", ko: "출생은 갱신이 아니다"},
+            {en: "The Algorithm", ko: "알고리즘"},
+            {en: "Demo", ko: "Demo"},
+            {en: "Implementation", ko: "Implementation"},
+            {en: "References", ko: "References"},
+        ],
+    },
     {slug: "fastslam_1", title: {en: "FastSLAM 1", ko: "FastSLAM 1"}, section: "filter_based"},
     {slug: "fastslam_2", title: {en: "FastSLAM 2", ko: "FastSLAM 2"}, section: "filter_based"},
     {slug: "gmapping", title: {en: "GMapping", ko: "GMapping"}, section: "filter_based"},
