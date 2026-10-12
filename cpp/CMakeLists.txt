@@ -21,6 +21,7 @@ file(GLOB_RECURSE SLAM_SOURCES CONFIGURE_DEPENDS
   ${CMAKE_CURRENT_SOURCE_DIR}/src/core/*.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/maps/*.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/filtering/*.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/features/*.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/registration/*.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/filter_based/*.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/src/graph_based/*.cpp)
