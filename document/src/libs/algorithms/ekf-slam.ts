@@ -1,5 +1,5 @@
 // python/slam/filter_based/ekf_slam.py의 라이브 미러 — Extended Kalman Filter SLAM (Smith &
-// Cheeseman, ICRA 1986), filter_based 갈래의 첫 회원: 지도가 추정기 안에 산다. 앞선 모든
+// Cheeseman, IJRR 1986), filter_based 갈래의 첫 회원: 지도가 추정기 안에 산다. 앞선 모든
 // 갈래가 association을 주어진 것으로 소비했을 때 이 페이지는 관측이association 이후에 무엇을
 // 하는지를 보여준다 — 상태를 증강한다. 상태 벡터는 x = [px, py, θ | l_0x, l_0y, l_1x, …]이고
 // 하나의 조밀 공분산 Σ가 포즈와 랜드마크 전부를 함께 싣는다. JS 산술은 libm과 ulp 단위로

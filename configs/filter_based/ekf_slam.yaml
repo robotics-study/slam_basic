@@ -1,4 +1,4 @@
-# ekf_slam — 확장 상태 EKF-SLAM(Smith & Cheeseman, ICRA 1986)을 filter_based 갈래의 첫
+# ekf_slam — 확장 상태 EKF-SLAM(Smith & Cheeseman, IJRR 1986)을 filter_based 갈래의 첫
 # 회원으로. 앞선 모든 갈래가 소비만 하던 (id, bearing, range) 관측을 이제 추정기가 직접 소화한다:
 # 상태는 [x, y, θ | 랜드마크 x,y 쌍들] 의 증강 벡터이고 하나의 공분산이 포즈와 랜드마크 전부를
 # 함께 싣는다. association 은 주어진다고 정직하게 가정한다(원논문이 그렇다).

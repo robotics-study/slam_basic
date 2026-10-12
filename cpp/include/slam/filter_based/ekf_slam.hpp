@@ -6,7 +6,7 @@
 #include "slam/core/estimator.hpp"
 #include "slam/core/types.hpp"
 
-// ekf_slam — Extended Kalman Filter SLAM (Smith & Cheeseman, ICRA 1986), the
+// ekf_slam — Extended Kalman Filter SLAM (Smith & Cheeseman, IJRR 1986), the
 // filter_based branch's first member: the map lives INSIDE the estimator. Every
 // earlier branch CONSUMED (id, bearing, range) observations with association given;
 // this is the page that shows what an observation DOES once association is given — it
