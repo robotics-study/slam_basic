@@ -1,0 +1,63 @@
+# ekf_slam — 확장 상태 EKF-SLAM(Smith & Cheeseman, ICRA 1986)을 filter_based 갈래의 첫
+# 회원으로. 앞선 모든 갈래가 소비만 하던 (id, bearing, range) 관측을 이제 추정기가 직접 소화한다:
+# 상태는 [x, y, θ | 랜드마크 x,y 쌍들] 의 증강 벡터이고 하나의 공분산이 포즈와 랜드마크 전부를
+# 함께 싣는다. association 은 주어진다고 정직하게 가정한다(원논문이 그렇다).
+#
+# 게이지 출발 자세는 정확히 안다고 선언한다(Σ_pose,0 = 0 — 이 저장소 전체의 게이지 관례)이고,
+# 포즈 불확실성은 오도메트리 노이즈 Q 에서만 자란다. 첫 관측은 증분 이벤트다: 평균은 관측을 현재
+# 추정 포즈로 역투영한 점이 그대로이고(혁신이 구성상 0 — 반사가 정확하므로), 공분산만 측정이
+# 산술적으로 옮긴 블록이 앉는다. 재관측이 포즈를 고친다 — 랜드마크 블록과 포즈 블록의 상관 블록을
+# 통해. σ_xy = σ_θ = 0 으로 재구축하면 포즈 블록의 공분산은 영원히 영 — 포즈는 데드레커닝 그
+# 자체가 되어 게이지 출발점부터 GT 와 비트 단위로 같아지고, 랜드마크만 관측 노이즈 바닥으로 수렴한다.
+algorithm: ekf_slam
+section: filter_based
+params:
+  - name: x0
+    type: float
+    default: 0.875
+    description: >-
+      게이지 출발 자세의 x — 정본 출발점과 같은 정확한 이진 부동소수(7/8). 게이지는 선언이다: 출발
+      자세를 정확히 안다고 선언하므로 Σ_pose,0 = 0 이고 포즈 불확실성은 Q 에서만 자란다.
+  - name: y0
+    type: float
+    default: 4.625
+    description: 게이지 출발 자세의 y — 위와 같음(37/8).
+  - name: theta_deg
+    type: float
+    default: 0.0
+    description: >-
+      게이지 출발 heading(도) — math.radians(0.0) = 0.0, 정본 출발 heading(atan2(0, +dx))과 정확히 같다.
+  - name: sigma_xy
+    type: float
+    default: 0.05
+    min: 0.0
+    max: 1.0
+    description: >-
+      운동 모델의 위치 노이즈 σ(m) — 필터가 스스로 더하는 Q 의 폭이고 시나리오 odom_noise 와 같은 값을
+      선언한다(주입이 아니다: 알고리즘은 센서를 파라미터로만 보듯, 운동 노이즈도 이렇게 선언된다). 0 이 정직한
+      값이다: Q=0 이면 포즈 블록의 공분산은 영원히 영이고(영에 유한값을 곱한 항들은 정확히 영) 크로스 블록도 영이라
+      랜드마크가 포즈를 결코 고치지 못한다 — 포즈는 오도메트리 데드레커닝 그 자체다.
+  - name: sigma_theta
+    type: float
+    default: 0.035
+    min: 0.0
+    max: 3.14159265358979
+    description: 운동 모델의 헤딩 노이즈 σ(rad) — Q 의 대각 세 번째 자리.
+  - name: sigma_range
+    type: float
+    default: 0.05
+    min: 0.001
+    description: >-
+      관측 거리 가우시안 σ(m) — demo 가 시나리오 센서의 sigma_range 로 주입한다. R = diag(σ_r², σ_bearing²)
+      의 대각 첫 자리이고, 랜드마크가 태어날 때 평균은 이 노이즈의 산술적 변환 그대로다. 최소가 0 이 아닌 이유:
+      t=0 에는 Σ 가 영행렬이라 첫 출생의 W = HpΣHᵀ + R = R — σ 가 0 이면 W 가 특이해진다.
+  - name: sigma_bearing
+    type: float
+    default: 0.03
+    min: 0.001
+    description: >-
+      관측 방위각 가우시안 σ(rad) — demo 가 시나리오 센서의 sigma_bearing 으로 주입한다. 거리와 방위각의
+      단위가 다르므로 R 은 대각이지만 대칭이 아니다 — B⁻¹ R B⁻ᵀ 가 랜드마크 공분산을 타원형으로 비틀었다가
+      재관측에서 다시 조이는 것이 이 페이지의 물리다.
+scenarios:
+  - office01_landmarks
