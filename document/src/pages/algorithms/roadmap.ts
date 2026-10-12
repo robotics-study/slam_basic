@@ -60,6 +60,18 @@ export const ALGO_BLURBS: AlgoBlurb[] = [
                 + " 측정된다.",
         },
     },
+    {
+        slug: "ndt",
+        blurb: {
+            en: "The branch's other idea: no correspondence at all. The reference scan is compiled into a grid of"
+                + " per-cell Gaussian distributions and the arriving scan is scored against that field; damped Newton"
+                + " climbs the score surface (λ doubling on Sylvester, strict-improvement halving) to the same SE(2)"
+                + " element. Capture range becomes the blob width itself.",
+            ko: "갈래의 다른 생각: 대응이라는 것 자체가 없다. 기준 스캔을 셀별 가우스 분포의 격자로 컴파일하고 도착한"
+                + " 스캔을 그 필드에 점수화한다; 감쇠 뉴턴이(실베스터 판정 λ 배가, 엄격한 개선 절반 줄이기) 점수 표면을"
+                + " 기어 올라가 같은 SE(2) 원소에 닿는다. 포획 범위는 blob 폭 자체가 된다.",
+        },
+    },
 ];
 
 // 대분류 — 홈의 큰 섹션이자 사이드바 disclosure 단위. 계보의 축은 하나다: 추정의 매개체가

@@ -7,3 +7,4 @@ export {runGridMapping} from "../src/libs/algorithms/grid-mapping";
 export {runParticleFilter} from "../src/libs/algorithms/particle-filter";
 export {runMcl} from "../src/libs/algorithms/mcl";
 export {runIcp} from "../src/libs/algorithms/icp";
+export {runNdt} from "../src/libs/algorithms/ndt";
